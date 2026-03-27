@@ -19,8 +19,6 @@ category/instruction
 ## Outside Boundary
 - Database for products and materials
 # Domain Concept Identification
-4 classes :: 
-
 PRODUCT (value object)
 <br>name<br>category<br>estimated_lifespan<br>material_list
 
@@ -30,34 +28,67 @@ MATERIAL (value object)
 RECYCLING GUIDANCE (??)
 <br>name
 
-IMPACT CALCULATOR (SERVICE)
+IMPACT CALCULATOR (service)
+
+DATABASE MANAGER (entity)
+
+MENU (entity)
 
 # Git Commands
-`git clone`
-`git clone https://github.com/flavio-colangelo/ood-project`
-`git checkout nameOFTheBranch`
-`git checkout -b nameOfTheBranch`
-bug/date/nameOfTheBug
-feature/addProducts
-`git status`
-`git add fileName.extension`
-`git add .`
-*.class
-`git commit -m 'enter your message here'`
-`git push origin branchName`
-`git branch`
+`git clone`<br>
+`git clone https://github.com/flavio-colangelo/ood-project`<br>
+`git checkout nameOFTheBranch`<br>
+`git checkout -b nameOfTheBranch`<br>
+bug/date/nameOfTheBug<br>
+feature/addProducts<br>
+`git status`<br>
+`git add fileName.extension`<br>
+`git add .`<br>
+*.class<br>
+`git commit -m 'enter your message here'`<br>
+`git push origin branchName`<br>
+`git branch`<br>
 `git branch -d nameOfTheBranch`
 
 # CRC Cards
 
-## Products
+## Products - value
 | Responsibility | Collaborators |
 | :------------- | :------------ |
 | Know its attributes | Materials |
 | Hold list of materials | Environmental Impact Calculator |
 | Expose composition for Environmental Impact Calculator | Recycling Guidance |
+|  | Database Manager |
 
-## Materials
+## Materials - value
 | Responsibility | Collaborators |
 | :------------- | :------------ |
-| Know its attributes | 
+| Know its attributes | Products (referenced by) |
+| Be reusable across products | Materials |
+|  | Database Manager |
+
+## Recycling Guidance - service
+| Responsibility | Collaborators |
+| :------------- | :------------ |
+| Identify the material(s) of a product | Products |
+| Fetch material guide from database | Database Manager |
+| Handle mixed materials |  |
+
+## Impact Calculator - service
+| Responsibility | Collaborators |
+| :------------- | :------------ |
+| Calculate environmental impact | Product |
+
+## Database Manager - entity
+| Responsibility | Collaborators |
+| :------------- | :------------ |
+| Hold databsae credentials |  |
+| Fetch from database |  |
+| Store in database |  |
+
+## Menu (entity)
+| Responsibility | Collaborators |
+| :------------- | :------------ |
+| Store menu options |  |
+| Display menu options |  |
+| Handle user input |  |
