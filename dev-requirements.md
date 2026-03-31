@@ -36,7 +36,7 @@ DATABASE MANAGER (entity)
 # CRC Cards
 
 ## Products - value
-The product class is responsible for storing information about itself such as name, category, estimated lifespan and its materials. The product knows its attributes. The product makes its composition available for the Environmental Impact Calculator and Recycling Guidance.
+The Product class is responsible for storing information about itself such as name, category, estimated lifespan and its materials. The Product knows its attributes. The Product makes its composition available for the Environmental Impact Calculator and Recycling Guidance.
 
 | Responsibility | Collaborators |
 | :------------- | :------------ |
@@ -47,26 +47,26 @@ The product class is responsible for storing information about itself such as na
 |  |  |
 
 ## Materials - value
-The material class is responsible for storing information about itself such as name and recycling guidance. The material knows its attributes. The material makes its composition available for the Product.
+The Material class is responsible for storing information about itself such as name and recycling guidance. The Material knows its attributes. The Material makes its composition available for the Product.
 | Responsibility | Collaborators |
 | :------------- | :------------ |
-| Know its attributes | Products |
+| Know its attributes | Product |
 | Be reusable across products |  |
 
-## Category - value
-The category class is responsible for storing information about itself such as name and recycling guidance. The category knows its attributes. The category makes its composition available for the Product.
+## Special Recycling Category - value
+The Special Recycling Category class is responsible for storing information about itself such as name and recycling guidance. The Special Recycling Category knows its attributes. The Special Recycling Category makes its composition available for the Product.
 | Responsibility | Collaborators |
 | :------------- | :------------ |
-| Know its attributes | Products |
+| Know its attributes | Product |
 | Be reusable across products |  |
 
-## Recycling Guidance - service
-The recycling guidance class provides the user with the guidance based on the product’s material or category. Based on the materials and it receives a proper guidance from the database through Product.
+## *Recycling Guidance - service
+The Recycling Guidance class provides the user with the guidance based on the product’s material or category. Based on the materials and it receives a proper guidance from the database through Product.
 
 
 | Responsibility | Collaborators |
 | :------------- | :------------ |
-| Identify the material(s) of a product | Products |
+| Identify the material(s) of a product | Product |
 | Identify the category of a product | |
 | Curate recycling guidance |  |
 | Handle mixed materials |  |
@@ -103,7 +103,7 @@ class Product {
     - name : String
     - category : Category
     - estimatedLifespan : Integer
-    - materials : List<Material>
+    - material : List<Material>
 }
 
 class Material {
