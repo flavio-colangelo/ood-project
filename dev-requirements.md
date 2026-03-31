@@ -25,14 +25,13 @@ PRODUCT (value object)
 MATERIAL (value object)
 <br>name
 
-RECYCLING GUIDANCE (??)
+RECYCLING GUIDANCE (service)
 <br>name
 
 IMPACT CALCULATOR (service)
 
 DATABASE MANAGER (entity)
 
-MENU (entity)
 
 # CRC Cards
 
