@@ -131,7 +131,7 @@ class Category {
 
 Product "*" *-- "1" Category
 Product "*" *-- "*" Material
-Product --> RecyclingGuidance : curates from
+Product <-- RecyclingGuidance : curates from
 Product --> ImpactCalculator : uses
 ' Menu --> Product : uses
 ' DatabaseManager <-- Product : uses
