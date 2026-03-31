@@ -40,7 +40,7 @@ The product class is responsible for storing information about itself such as na
 
 | Responsibility | Collaborators |
 | :------------- | :------------ |
-| Know its attributes | Material |
+| Know its attributes | Materials |
 | Hold list of materials | Environmental Impact Calculator |
 | Expose composition for Environmental Impact Calculator | Recycling Guidance |
 |  | Category |
@@ -72,6 +72,7 @@ The recycling guidance class provides the user with the guidance based on the pr
 | Handle mixed materials |  |
 
 ## Impact Calculator - service
+The Impact Calculator calculates the environmental impact of a product based on its material. It knows the composition of a product.
 | Responsibility | Collaborators |
 | :------------- | :------------ |
 | Calculate environmental impact | Product |
@@ -79,14 +80,14 @@ The recycling guidance class provides the user with the guidance based on the pr
 <!-- ## Database Manager - entity
 | Responsibility | Collaborators |
 | :------------- | :------------ |
-| Hold database credentials | Product |
+| Hold database credentials |  |
 | Fetch from database |  |
 | Store in database |  | -->
 
 <!-- ## Menu (entity)
 | Responsibility | Collaborators |
 | :------------- | :------------ |
-| Store menu options | Product |
+| Store menu options | Products |
 | Display menu options |  |
 | Handle user input |  | -->
 
@@ -153,6 +154,7 @@ feature/addProducts<br>
 *.class<br>
 `git commit -m 'enter your message here'`<br>
 `git push origin branchName`<br>
+`git pull branch` <br>
 `git branch`<br>
 `git branch -d nameOfTheBranch`
 `git fetch origin development`
