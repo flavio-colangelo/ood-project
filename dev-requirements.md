@@ -36,27 +36,40 @@ MENU (entity)
 
 # CRC Cards
 
-## Product - value
+## Products - value
+The product class is responsible for storing information about itself such as name, category, estimated lifespan and its materials. The product knows its attributes. The product makes its composition available for the Environmental Impact Calculator and Recycling Guidance.
+
 | Responsibility | Collaborators |
 | :------------- | :------------ |
 | Know its attributes | Material |
 | Hold list of materials | Environmental Impact Calculator |
 | Expose composition for Environmental Impact Calculator | Recycling Guidance |
-| Add into database | Database Manager |
+|  | Category |
 |  |  |
 
-## Material - value
+## Materials - value
+The material class is responsible for storing information about itself such as name and recycling guidance. The material knows its attributes. The material makes its composition available for the Product.
 | Responsibility | Collaborators |
 | :------------- | :------------ |
-| Know its attributes | Product (referenced by) |
-| Be reusable across products | Material |
-|  | Database Manager |
+| Know its attributes | Products |
+| Be reusable across products |  |
+
+## Category - value
+The category class is responsible for storing information about itself such as name and recycling guidance. The category knows its attributes. The category makes its composition available for the Product.
+| Responsibility | Collaborators |
+| :------------- | :------------ |
+| Know its attributes | Products |
+| Be reusable across products |  |
 
 ## Recycling Guidance - service
+The recycling guidance class provides the user with the guidance based on the product’s material or category. Based on the materials and it receives a proper guidance from the database through Product.
+
+
 | Responsibility | Collaborators |
 | :------------- | :------------ |
 | Identify the material(s) of a product | Products |
-| Fetch material guide from database | Database Manager |
+| Identify the category of a product | |
+| Curate recycling guidance |  |
 | Handle mixed materials |  |
 
 ## Impact Calculator - service
@@ -64,24 +77,68 @@ MENU (entity)
 | :------------- | :------------ |
 | Calculate environmental impact | Product |
 
-## Database Manager - entity
+<!-- ## Database Manager - entity
 | Responsibility | Collaborators |
 | :------------- | :------------ |
 | Hold database credentials | Product |
 | Fetch from database |  |
-| Store in database |  |
+| Store in database |  | -->
 
-## Menu - entity
+<!-- ## Menu (entity)
 | Responsibility | Collaborators |
 | :------------- | :------------ |
 | Store menu options | Product |
 | Display menu options |  |
-| Handle user input |  |
+| Handle user input |  | -->
 
-# PUML
+# UML Class Diagram
 ```puml
-@start john
+@startuml diagram
 
+class RecyclingGuidance {
+
+}
+
+class Product {
+    - name : String
+    - category : Category
+    - estimatedLifespan : Integer
+    - materials : List<Material>
+}
+
+class Material {
+    - name : String
+    - recyclingGuidance : List<String>
+}
+
+class ImpactCalculator {
+
+}
+
+class Category {
+    - name : String
+    - recyclingGuidance : List<String>
+}
+
+' class DatabaseManager {
+'     - username : String
+'     - password : String
+' }
+' 
+' class Menu {
+'     - menuOptions : List<String>
+' }
+
+Product "*" *-- "1" Category
+Product "*" *-- "*" Material
+Product --> RecyclingGuidance : curates from
+Product --> ImpactCalculator : uses
+' Menu --> Product : uses
+' DatabaseManager <-- Product : uses
+' DatabaseManager <-- Material : uses
+' Menu --> RecyclingGuidance : uses
+
+@enduml diagram
 ```
 
 # Git Commands
@@ -99,3 +156,4 @@ feature/addProducts<br>
 `git push origin branchName`<br>
 `git branch`<br>
 `git branch -d nameOfTheBranch`
+`git fetch origin development`
