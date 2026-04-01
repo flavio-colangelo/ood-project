@@ -36,7 +36,7 @@ DATABASE MANAGER (entity)
 # CRC Cards
 
 ## Products - value
-The Product class is responsible for storing information about itself such as name, category, estimated lifespan and its materials. The Product knows its attributes. The Product makes its composition available for the Environmental Impact Calculator and Recycling Guidance.
+The Product class is responsible for storing its attributes such as name, category, estimated lifespan, and materials. It provides access to its materials for the Environmental Impact Calculator and Recycling Guidance.
 
 | Responsibility | Collaborators |
 | :------------- | :------------ |
