@@ -96,51 +96,35 @@ The Impact Calculator calculates the environmental impact of a product based on 
 @startuml diagram
 
 class RecyclingGuidance {
-
 }
 
 class Product {
     - name : String
     - category : Category
     - estimatedLifespan : Integer
-    - material : List<Material>
+    - materials : List<Material>
 }
 
 class Material {
     - name : String
+    - impactValue : double
     - recyclingGuidance : List<String>
 }
 
 class ImpactCalculator {
-
 }
 
 class Category {
     - name : String
-    - recyclingGuidance : List<String>
 }
 
-' class DatabaseManager {
-'     - username : String
-'     - password : String
-' }
-' 
-' class Menu {
-'     - menuOptions : List<String>
-' }
-
-Product "*" *-- "1" Category
-Product "*" *-- "*" Material
-Product <-- RecyclingGuidance : curates from
-Product --> ImpactCalculator : uses
-' Menu --> Product : uses
-' DatabaseManager <-- Product : uses
-' DatabaseManager <-- Material : uses
-' Menu --> RecyclingGuidance : uses
+Product --> "1" Category
+Product *-- "1..*" Material
+RecyclingGuidance --> Product : derives guidance for
+ImpactCalculator --> Product : calculates for
 
 @enduml diagram
 ```
-
 # Git Commands
 `git clone`<br>
 `git clone https://github.com/flavio-colangelo/ood-project`<br>
