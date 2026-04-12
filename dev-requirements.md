@@ -138,7 +138,73 @@ Calculate <|.. SimpleImpactStrategy
 
 Product *-- "1..*" Material
 
-@enduml diagram
+@enduml
+```
+
+# UML Class Diagram (Week 3 - Ayomide Refined Version)
+
+```puml
+@startuml
+
+class Menu {
+  - productService: ProductService
+  - guidanceService: RecyclingGuidanceService
+  + startLoop(): void
+  - displayOptions(): void
+  - handleUserInput(): void
+}
+
+class ProductService {
+  + createProduct(product: Product): void
+  + fetchProduct(product: Product): Product
+  + listProducts(): List<Product>
+  + evaluateProductImpact(product: Product, strategy: ImpactCalculator): double
+}
+
+interface ImpactCalculator {
+  + calculate(p: Product): double
+}
+
+class WeightedByLifespanStrategy {
+  + calculate(p: Product): double
+}
+
+class SimpleSumStrategy {
+  + calculate(p: Product): double
+}
+
+class Product {
+  - name: String
+  - category: String
+  - estimatedLifespan: Integer
+  - materials: List<Material>
+}
+
+class Material {
+  - name: String
+  - impactValue: Integer
+  - recyclingGuidance: List<String>
+}
+
+class RecyclingGuidanceService {
+  + fetchGuidance(p: Product): List<String>
+}
+
+Menu --> ProductService
+Menu --> RecyclingGuidanceService
+
+ProductService --> ImpactCalculator
+ProductService --> Product
+RecyclingGuidanceService --> Product
+
+ImpactCalculator <|.. WeightedByLifespanStrategy
+ImpactCalculator <|.. SimpleSumStrategy
+
+ImpactCalculator ..> Product
+
+Product "1" o-- "*" Material
+
+@enduml
 ```
 # Git Commands
 `git clone`<br>
