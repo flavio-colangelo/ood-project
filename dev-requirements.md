@@ -35,43 +35,43 @@ DATABASE MANAGER (entity)
 
 # CRC Cards
 
-## Products - value
+## Product - value
 The Product class is responsible for storing its attributes such as name, category, estimated lifespan, and materials. It provides access to its materials for the Environmental Impact Calculator and Recycling Guidance.
 
 | Responsibility | Collaborators |
 | :------------- | :------------ |
-| Know its attributes | Materials |
+| Know its attributes | Material |
 | Hold list of materials | Environmental Impact Calculator |
 | Expose composition for Environmental Impact Calculator | Recycling Guidance |
 |  | Category |
 |  |  |
 
-## Materials - value
+## Material - value
 The material class is responsible for storing information about itself such as name and recycling guidance. The material knows its attributes. The material makes its composition available for the Product.
 | Responsibility | Collaborators |
 | :------------- | :------------ |
 | Know its attributes | Product |
-| Be reusable across products |  |
+| Be reusable across Product |  |
 
-## Special Recycling Category - value
-The Special Recycling Category class is responsible for storing information about itself such as name and recycling guidance. The Special Recycling Category knows its attributes. The Special Recycling Category makes its composition available for the Product.
+## Product Service - service
+The Product Service class provides abstraction between the Menu and the Product classes.
 | Responsibility | Collaborators |
 | :------------- | :------------ |
-| Know its attributes | Product |
-| Be reusable across products |  |
+| Provide interaction between Menu (user), Product and Environmental Impact Calculator | Product |
+|  | Menu 
+| | Environmental Impact Calculator
 
-## *Recycling Guidance - service
+## Recycling Guidance Service - service
 The Recycling Guidance class provides the user with the guidance based on the product’s material or category. Based on the materials and it receives a proper guidance from the database through Product.
 
 
 | Responsibility | Collaborators |
 | :------------- | :------------ |
-| Identify the material(s) of a product | Product |
-| Identify the category of a product | |
+| Identify the material(s) of a product | Product | | |
 | Curate recycling guidance |  |
 | Handle mixed materials |  |
 
-## Impact Calculator - service
+## Environmental Impact Calculator - service
 The Impact Calculator calculates the environmental impact of a product based on its material. It uses the composition of a product to calculate the environmental impact.
 | Responsibility | Collaborators |
 | :------------- | :------------ |
@@ -84,12 +84,12 @@ The Impact Calculator calculates the environmental impact of a product based on 
 | Fetch from database |  |
 | Store in database |  | -->
 
-<!-- ## Menu (entity)
+## Menu - entity
 | Responsibility | Collaborators |
 | :------------- | :------------ |
 | Store menu options | Products |
 | Display menu options |  |
-| Handle user input |  | -->
+| Handle user input |  |
 
 # UML Class Diagram
 ```puml
