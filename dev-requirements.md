@@ -39,19 +39,19 @@ DATABASE MANAGER (entity)
 The Product Service class is responsible for providing functionality concerning the product to the user. It knows about the product and its composition.
 | Responsibility | Collaborators |
 | :------------- | :------------ |
-| Know the product composition | Impact Calculator |
+| Know the product composition | Environmental Impact Calculator |
 | Fetch detailed information about any product | Product |
 | Have access to the database | |
-| Expose product composition for Impact Calculator | |
+| Expose product composition for Environmental Impact Calculator | |
 
 ## Product - value
-The Product class is responsible for storing its attributes such as name, category, estimated lifespan, and materials. It provides access to its materials for the Environmental Impact Calculator and Recycling Guidance.
+The Product class is responsible for storing its attributes such as name, category, estimated lifespan, and materials. It provides access to its materials for the Environmental Impact Calculator and Recycling Guidance Service.
 
 | Responsibility | Collaborators |
 | :------------- | :------------ |
 | Know its attributes | Material |
 | Hold list of materials | Environmental Impact Calculator |
-| Expose composition for Environmental Impact Calculator | Recycling Guidance |
+| Expose composition for Environmental Impact Calculator | Recycling Guidance Service |
 
 ## Material - value
 The material class is responsible for storing information about itself such as name and recycling guidance. The material knows its attributes. The material makes its composition available for the Product.
@@ -61,7 +61,7 @@ The material class is responsible for storing information about itself such as n
 | Be reusable across Product |  |
 
 ## Recycling Guidance Service - service
-The Recycling Guidance class provides the user with the guidance based on the product’s material or category. Based on the materials and it receives a proper guidance from the database through Product.
+The Recycling Guidance ervice provides the user with the guidance based on the product’s material or category. Based on the materials and it receives a proper guidance from the database through Product.
 | Responsibility | Collaborators |
 | :------------- | :------------ |
 | Identify the material(s) of a product | Product | | |
@@ -69,7 +69,7 @@ The Recycling Guidance class provides the user with the guidance based on the pr
 | Handle mixed materials |  |
 
 ## Environmental Impact Calculator - service
-The Impact Calculator calculates the environmental impact of a product based on its material. It uses the composition of a product to calculate the environmental impact.
+The Environmental Impact Calculator calculates the environmental impact of a product based on its material. It uses the composition of a product to calculate the environmental impact.
 | Responsibility | Collaborators |
 | :------------- | :------------ |
 | Calculate environmental impact | Product |
