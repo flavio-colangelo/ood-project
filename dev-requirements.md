@@ -93,55 +93,81 @@ The Environmental Impact Calculator calculates the environmental impact of a pro
 # UML Class Diagram
 ```puml
 @startuml
-
 class Menu {
-    - appService : AppService
+  - appService: AppService
+  - guidanceService: RecyclingGuidanceService
+  + startLoop(): void
+  - displayOptions(): void
+  - handleUserInput(): void
 }
 
-class AppService {
-    + evaluateProductImpact(product: Product, strategy: Calculate) : double
-    + fetchRecyclingGuidance(product: Product)
+class ProductService {
+  + createProduct(product: Product): void
+  + fetchProduct(product: Product): Product
+  + listProducts(): List<Product>
 }
 
-interface Calculate {
-    + calculate(p: Product) : double
+interface EnvironmentalImpactCalculator {
+  + calculate(p: Product): double
 }
 
-class SimpleImpactStrategy {
-    + calculate(p: Product) : double
+class WeightedByLifespanStrategy {
+  + calculate(p: Product): double
 }
-class ProductManager {
-    - listProduct()
-    - showDetailedInfo()
- }
+
+class SimpleSumStrategy {
+  + calculate(p: Product): double
+}
+
 class Product {
-    - name : String
-    - category : String
-    - estimatedLifespan : Integer
-    - materials : List<Material>
+  - name: String
+  - category: String
+  - estimatedLifespan: Integer
+  - materials: List<Material>
+  + getMaterials(): List<Material>
 }
 
 class Material {
-    - name : String
-    - impactValue : double
-    - recyclingGuidance : List<String>
-    - impactValue : Integer
+  - name: String
+  - impactValue: Integer
+  - recyclingGuidance: List<String>
 }
 
-class RecyclingGuidance {
-    + fetchGuidance(p: Product) : List<String>
+class RecyclingGuidanceService {
+  + fetchGuidance(p: Product): List<String>
 }
 
-Menu --> AppService
-AppService --> Product
-AppService --> RecyclingGuidance
-AppService --> Calculate
 
-Calculate <|.. SimpleImpactStrategy
+Menu --> ProductService : calls
+Menu --> RecyclingGuidanceService : calls
+Menu --> EnvironmentalImpactCalculator : calls
 
-Product *-- "1..*" Material
+ProductService --> Product : fetches
+RecyclingGuidanceService --> Product : fetches
 
-@enduml diagram
+EnvironmentalImpactCalculator <|.. SimpleSumStrategy : implements
+
+EnvironmentalImpactCalculator ..> Product : analyzes
+
+Product "*" o-- "*" Material : contains
+@enduml
+```
+# Package Structure
+```
+presentation/ 
+    Menu.java
+application/ 
+    EnvironmentalImpactCalculator.java
+    SimpleSumStrategy.java << implementation of EIC
+    WeightedByLifespanStrategy.java << implementation of EIC
+    ProductService.java
+    RecyclingGuidanceService.java
+domain/
+    Product.java
+    ProductRepository.java  << for database interfacing
+    Material.java
+infrastructure/
+    DatabaseManager.java
 ```
 # Git Commands
 `git clone`<br>
