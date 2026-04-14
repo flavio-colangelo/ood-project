@@ -6,4 +6,8 @@ The roles are divided between the team member as follows:
 
 # TODO
 
-- explain syntax and git stuff
+Architectual Decisions:
+In the first Presentation layer we have the Menu class. This class holds the UI through which the user interacts with the app.
+The next Application layer consists of the ProductService class, RecyclingGuidanceService class and strategies WeightedByLifespan and SimpleSumStrategy, implementing the EnvironmentalImpactCalculator interface.
+The Product, ProductRepository and Material classes exist in the Domain layer.
+In the last Framework layer we have the DatabaseManager as we plan on using a database to hold the different products and materials (including its recycling guidance).
