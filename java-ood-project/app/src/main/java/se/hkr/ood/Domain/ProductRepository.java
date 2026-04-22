@@ -6,11 +6,16 @@ import java.util.List;
 import se.hkr.ood.domain.Product;
 
 public class ProductRepository implements Repository {
-    public void create() {
+    public void create(Object object) {
+
+    }
+    
+    public void create(Product product) {
+
     }
 
     public Product read(String name) {
-        return new Product();
+        return new Product("product", "category", 1, new ArrayList<>());
     }
 
     public void delete() {
@@ -26,6 +31,6 @@ public class ProductRepository implements Repository {
     }
 
     public Product parse(Object object) {
-        return new Product();
+        return new Product("product", "category", 1, new ArrayList<>());
     };
 }
