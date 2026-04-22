@@ -3,12 +3,10 @@
  */
 package se.hkr.ood;
 
-public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
+import se.hkr.ood.presentation.Menu;
 
+public class App {
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        Menu.startLoop();
     }
 }
