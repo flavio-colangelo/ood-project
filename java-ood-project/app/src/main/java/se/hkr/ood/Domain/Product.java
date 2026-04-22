@@ -8,7 +8,7 @@ public class Product extends ProductRepository {
   private int enstimatedLifespan;
   private List<Material> materials;
 
-  Product(String name, String category, int enstimatedLifespan, List<Material> materials) {
+  public Product(String name, String category, int enstimatedLifespan, List<Material> materials) {
     this.name = name;
     this.category = category;
     this.enstimatedLifespan = enstimatedLifespan;

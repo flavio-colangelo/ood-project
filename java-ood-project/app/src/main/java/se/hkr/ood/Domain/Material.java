@@ -7,7 +7,7 @@ public class Material extends MaterialRepository {
   private int impactValue;
   private List<String> recyclingGuidance;
 
-  Material(String name, int impactValue, List<String> recyclingGuidance) {
+  public Material(String name, int impactValue, List<String> recyclingGuidance) {
     this.name = name;
     this.impactValue = impactValue;
     this.recyclingGuidance = recyclingGuidance;
