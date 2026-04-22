@@ -1,4 +1,4 @@
-package se.hkr.ood;
+package se.hkr.ood.domain;
 
 public class Material {
 
