@@ -1,5 +1,9 @@
 package se.hkr.ood.domain;
 
-public class RecyclingGuidanceService {
+import java.util.List;
 
+public class RecyclingGuidanceService {
+  public List<String> fetchGuidance(Product p) {
+    return p.getMaterials().getFirst().getGuidance();
+  }
 }
