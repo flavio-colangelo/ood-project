@@ -94,8 +94,6 @@ The Environmental Impact Calculator calculates the environmental impact of a pro
 ```puml
 @startuml
 class Menu {
-  - productService: ProductService
-  - guidanceService: RecyclingGuidanceService
   + startLoop(): void
   # displayOptions(): void
   # handleUserInput(): void
@@ -151,6 +149,7 @@ interface Repository {
   + update(attribute: String, value: String): void
   + delete():void
   + fetchAll(): List<Object>
+  + parse(r: Response): Object
 }
 
 abstract class ProductRepository {
@@ -159,6 +158,7 @@ abstract class ProductRepository {
   + update(attribute: String, value: String): void
   + delete(): void
   + fetchAll(): List<Product>
+  + parse(r: Response): Product
 }
 
 abstract class MaterialRepository {
@@ -167,6 +167,7 @@ abstract class MaterialRepository {
   + update(attribute: String, value: String): void
   + delete(): void
   + fetchAll(): List<Material>
+  + parse(r: Response): Material
 }
 
 class DatabaseManager {
