@@ -1,5 +1,5 @@
 package se.hkr.ood.domain;
 
-public class EnviromentalImpactCalculator {
-
+interface EnviromentalImpactCalculator {
+    double calculate(Product product);
 }
