@@ -7,14 +7,16 @@ The roles are divided between the team member as follows:
 # TODO
 Our system is structured using a layered architecture consisting of Presentation, Application, Domain, and a planned Framework layer.
 
-The Presentation layer contains the Menu class, which handles user interaction and acts as the entry point of the system. It delegates all user actions to the application layer and does not contain business logic.
+The Presentation layer contains the Menu class, which handles user interaction and delegates requests to the application layer. It acts as the entry point of the system and does not contain business logic.
 
-The Application layer contains the coordination logic of the system. This includes ProductService and RecyclingGuidanceService, which handle use cases such as creating and retrieving products, calculating environmental impact, and generating recycling guidance. The layer also includes the EnvironmentalImpactCalculator interface and its implementations (WeightedByLifespanStrategy and SimpleSumStrategy), which define different calculation behaviours.
+The Application layer contains the main coordination logic. This includes ProductService and RecyclingGuidanceService. ProductService manages operations such as creating, retrieving, listing products, and evaluating environmental impact. RecyclingGuidanceService generates recycling guidance based on product composition. Additional services such as MaterialService may also be introduced to manage materials.
 
-The Domain layer contains the core data structures, Product and Material. These classes are responsible only for storing data such as product attributes, material composition, and impact values, and remain independent of application logic.
+The Application layer also includes the ImpactCalculator interface with implementations such as WeightedByLifespanStrategy and SimpleSumStrategy. These define different strategies for calculating environmental impact and allow the system to be extended without modifying existing functionality.
+
+The Domain layer contains the core entities Product and Material. These classes are responsible for storing data such as attributes, material composition, impact values, and recycling guidance, without containing application logic.
 
 A Framework layer is planned to handle external concerns such as persistence (e.g., DatabaseManager).
 
-Dependencies follow a clear direction: Presentation → Application → Domain. The application layer depends on abstractions (e.g., EnvironmentalImpactCalculator) rather than concrete implementations, which keeps the system flexible and easier to extend.
+The system follows a clear dependency direction: the Presentation layer depends on the Application layer, and the Application layer depends on the Domain layer and abstractions such as ImpactCalculator. The Domain layer remains independent of other layers.
 
-- explain syntax and git stuff
+This structure ensures clear separation of concerns and supports maintainability, testability, and extensibility.
