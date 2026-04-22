@@ -93,29 +93,23 @@ The Environmental Impact Calculator calculates the environmental impact of a pro
 # UML Class Diagram
 ```puml
 @startuml
+
 class Menu {
-  - productService: ProductService
+  - appService: AppService
   - guidanceService: RecyclingGuidanceService
   + startLoop(): void
-  # displayOptions(): void
-  # handleUserInput(): void
+  - displayOptions(): void
+  - handleUserInput(): void
 }
 
 class ProductService {
-  + createProduct(String ... args): Product
-  + fetchProduct(name: String): Product
+  + createProduct(product: Product): void
+  + fetchProduct(product: Product): Product
   + listProducts(): List<Product>
-  + recyclingGuidance(p: Product): List<Strings>
-  + enviromentalImpact(p: Product): double
-  + enviromentalImpact(p: Product, Weighted: bool): double
+  + evaluateProductImpact(product: Product, strategy: Calculate): double
 }
 
-class MaterialService {
-  + createMaterial(String ... args): void
-  + fetchMaterial(name: String): material
-}
-
-interface EnvironmentalImpactCalculator {
+interface ImpactCalculator {
   + calculate(p: Product): double
 }
 
@@ -127,7 +121,7 @@ class SimpleSumStrategy {
   + calculate(p: Product): double
 }
 
-class Product implements ProductRepository{
+class Product {
   - name: String
   - category: String
   - estimatedLifespan: Integer
@@ -135,7 +129,7 @@ class Product implements ProductRepository{
   + getMaterials(): List<Material>
 }
 
-class Material implements MaterialRepository{
+class Material {
   - name: String
   - impactValue: Integer
   - recyclingGuidance: List<String>
@@ -145,14 +139,20 @@ class RecyclingGuidanceService {
   + fetchGuidance(p: Product): List<String>
 }
 
-Menu --> AppService
-AppService --> Product
-AppService --> RecyclingGuidance
-AppService --> Calculate
 
-Calculate <|.. SimpleImpactStrategy
+Menu --> ProductService : calls
+Menu --> RecyclingGuidanceService : calls
 
-Product *-- "1..*" Material
+ProductService --> ImpactCalculator : executes
+ProductService --> Product : fetches
+RecyclingGuidanceService --> Product : fetches
+
+ImpactCalculator <|.. WeightedByLifespanStrategy : implements
+ImpactCalculator <|.. SimpleSumStrategy : implements
+
+ImpactCalculator ..> Product : analyzes
+
+Product "*" o-- "*" Material : contains
 
 @enduml diagram
 ```
