@@ -125,7 +125,7 @@ class SimpleSumStrategy {
   + calculate(p: Product): double
 }
 
-class Product implements ProductRepository{
+class Product {
   - name: String
   - category: String
   - estimatedLifespan: Integer
@@ -133,7 +133,7 @@ class Product implements ProductRepository{
   + getMaterials(): List<Material>
 }
 
-class Material implements MaterialRepository{
+class Material{
   - name: String
   - impactValue: Integer
   - recyclingGuidance: List<String>
@@ -144,7 +144,7 @@ class RecyclingGuidanceService {
 }
 
 interface Repository {
-  + create(): void
+  + create(object: Object): void
   + read(name: String): Object
   + update(attribute: String, value: String): void
   + delete():void
@@ -152,8 +152,8 @@ interface Repository {
   + parse(r: Response): Object
 }
 
-abstract class ProductRepository {
-  + create(): void
+class ProductRepository {
+  + create(object: Product): void
   + read(name: String): Product
   + update(attribute: String, value: String): void
   + delete(): void
@@ -161,8 +161,8 @@ abstract class ProductRepository {
   + parse(r: Response): Product
 }
 
-abstract class MaterialRepository {
-  + create(): void
+class MaterialRepository {
+  + create(object: Material): void
   + read(name: String): Material
   + update(attribute: String, value: String): void
   + delete(): void
@@ -178,11 +178,13 @@ class DatabaseManager {
 Menu --> ProductService : calls
 Menu --> MaterialService : calls
 
-ProductService --> Product : call
+ProductService --> Product : fetches
 ProductService --> RecyclingGuidanceService : calls
 ProductService --> EnvironmentalImpactCalculator : calls
+ProductService --> ProductRepository: calls
 
 MaterialService --> Material : fetches
+MaterialService --> MaterialRepository: calls
 
 RecyclingGuidanceService --> Product : fetches
 
@@ -197,7 +199,10 @@ Repository <|.. MaterialRepository : implements
 Product "*" o-- "*" Material : contains
 
 MaterialRepository --> DatabaseManager : calls
+MaterialRepository --> Material : calls
+
 ProductRepository --> DatabaseManager : calls
+ProductRepository --> Product : calls
 @enduml
 ```
 # Package Structure
