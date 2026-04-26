@@ -5,6 +5,8 @@ import se.hkr.ood.application.ProductService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.InputMismatchException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -29,9 +31,63 @@ public class Menu {
   // private static List<String> cb1 = Arrays.asList("a) Update name", "b) Update impact value",
   //     "c) Update recycling guidance", "q) Back");
 
+  private static String back = "q) Back";
 
-  private static void fetchProductOption() {
-    System.out.println("This fetches the product!");
+  private static void fetchProductOption(Scanner scanner) {
+    // System.out.println("This fetches the product!");
+    // List<MenuOption> fetchProduct = new LinkedList<>();
+    // fetchProduct.add(new MenuOption(() -> {}, "Insert Name", back));
+    // fetchProduct.add(new MenuOption(() -> {}, "Calculate impact value?"));
+    System.out.println("Insert name");
+    System.out.println(back);
+    String choice = scanner.nextLine();
+    String productname = null;
+    Boolean continuing = true;
+    while (continuing) {
+      if (!choice.trim().equalsIgnoreCase("")) {
+        if (choice.trim().equalsIgnoreCase("q")) {
+          continuing = false;
+          break;
+        }
+
+        System.out.println("The Product doesn't exist\nCreate new Product? (Y/N)");
+        choice = scanner.nextLine();
+
+        if (handleExpectedUserInput(choice, "y")) { // if N is default it should act like the input is invalid
+          System.out.print("Introduce Category: ");
+          String productCategory = scanner.nextLine();
+
+          System.out.print("\nIntroduce Lifespan: ");
+          String productLifespan = scanner.nextLine();
+
+          List<String> productMaterials = new ArrayList<>();
+          System.out.println("\nIntroduce Materials (ENTER to finish):");
+
+          while (true) {
+            System.out.print("> ");
+            String materialInput = scanner.nextLine();
+
+            if (materialInput.trim().isEmpty()) {
+              break;
+            }
+
+            productMaterials.add(materialInput);
+          }
+
+          System.out.println("\nyippee!!");
+          System.out.println("Category: " + productCategory);
+          System.out.println("Lifespan: " + productLifespan);
+          System.out.println("Materials: " + productMaterials);
+          break;
+        } else {
+          break;
+        }
+
+      } else {
+        System.err.println("Input cannot be empty.");
+        choice = scanner.nextLine();
+      }
+    }
   }
 
   private static void listProductOption() {
@@ -39,14 +95,14 @@ public class Menu {
   }
   
   private static void runOption(String choice) {
-    MenuOption chosenOption = options.stream().filter(o -> o.getCharacter().equalsIgnoreCase(choice)).findFirst().get(); // get the option with the corresponsing character (or throw NoSuckElement!!)
+    MenuOption chosenOption = options.stream().filter(o -> o.getCharacter().equalsIgnoreCase(choice)).findFirst().get(); // get the option with the corresponsing character (or throw NoSuchElement!!)
     chosenOption.run();
   }
   
   private static List<MenuOption> options = new ArrayList<>();
   
-  private static void init() {
-    options.add(new MenuOption("a", "Fetch Product", ()-> {fetchProductOption();}));
+  private static void init(Scanner scanner) {
+    options.add(new MenuOption("a", "Fetch Product", ()-> {fetchProductOption(scanner);}));
     options.add(new MenuOption("b", "List Product", ()-> {listProductOption();}));
   }
 
@@ -54,7 +110,7 @@ public class Menu {
     Scanner scanner = new Scanner(System.in);
     String choice = scanner.nextLine();
     boolean looping = true;
-    init();
+    init(scanner);
     while (!choice.trim().equalsIgnoreCase("q")) {
       // displayOptions(basic);
 
@@ -97,5 +153,10 @@ public class Menu {
 
   protected static String handleUserInput() {
     return "x";
+  }
+
+  protected static Boolean handleExpectedUserInput(String choice, String... values) {
+    String formattedChoice = choice.toLowerCase().trim();
+    return !Arrays.asList(values).contains(formattedChoice) ? false : true;
   }
 }
