@@ -59,8 +59,13 @@ public class Menu {
       // displayOptions(basic);
 
       // FOR TESTING
-      runOption(choice.toLowerCase().trim());
-      choice = scanner.nextLine();
+      try {
+        runOption(choice.toLowerCase().trim());
+      } catch (Exception e) {
+        System.err.println(e.getMessage());
+      } finally {
+        choice = scanner.nextLine();
+      }
 
       // switch (handleUserInput().toLowerCase()) {
       //   case "a":
