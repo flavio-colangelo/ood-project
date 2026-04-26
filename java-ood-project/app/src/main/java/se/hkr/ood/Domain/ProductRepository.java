@@ -5,7 +5,7 @@ import java.util.List;
 
 import se.hkr.ood.domain.Product;
 
-public class ProductRepository implements Repository {
+public class ProductRepository {
     static public void create(Product product) {
 
     }
