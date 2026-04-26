@@ -3,6 +3,7 @@ package se.hkr.ood.application;
 import se.hkr.ood.domain.Product;
 import se.hkr.ood.domain.ProductRepository;
 import se.hkr.ood.domain.RecyclingGuidanceService;
+import se.hkr.ood.domain.EnviromentalImpactCalculator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ public class ProductService {
         return ProductRepository.read(name);
     }
 
-    public static double environmentalImpact(Product product, EnvironmentalImpactCalculator strategy) {
+    public static double environmentalImpact(Product product, EnviromentalImpactCalculator strategy) {
         return strategy.calculate(product);
     }
 
