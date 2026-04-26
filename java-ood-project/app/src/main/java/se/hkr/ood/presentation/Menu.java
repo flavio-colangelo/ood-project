@@ -29,12 +29,35 @@ public class Menu {
       "c) Update recycling guidance", "q) Back");
 
   public static void startLoop() {
-    displayOptions();
-    ProductService.fetchProduct(handleUserInput());
+    boolean looping = true;
+    while (looping) {
+      displayOptions(basic);
+      switch (handleUserInput().toLowerCase()) {
+        case "a":
+
+          break;
+        case "b":
+
+          break;
+        case "c":
+
+          break;
+        case "q":
+          looping = false;
+          break;
+        default:
+          System.out.println("Invalid option, please try again.");
+          break;
+      }
+
+    }
   }
 
-  protected static void displayOptions() {
-
+  protected static void displayOptions(List<String> options) {
+    for (int i = 0; i < options.size(); i++) {
+      System.out.println(options.get(i));
+    }
+    System.out.print("> ");
   }
 
   protected static String handleUserInput() {
