@@ -41,7 +41,6 @@ public class Menu {
     System.out.println("Insert name");
     System.out.println(back);
     String choice = scanner.nextLine();
-    String productname = null;
     Boolean continuing = true;
     while (continuing) {
       if (!choice.trim().equalsIgnoreCase("")) {
@@ -53,31 +52,71 @@ public class Menu {
         System.out.println("The Product doesn't exist\nCreate new Product? (Y/N)");
         choice = scanner.nextLine();
 
-        if (handleExpectedUserInput(choice, "y")) { // if N is default it should act like the input is invalid
-          System.out.print("Introduce Category: ");
-          String productCategory = scanner.nextLine();
+        if (handleExpectedUserInput(choice, "y")) {
+          int step = 1; 
+          boolean creatingProduct = true;
 
-          System.out.print("\nIntroduce Lifespan: ");
-          String productLifespan = scanner.nextLine();
-
+          String productCategory = "";
+          int productLifespan = 0;
           List<String> productMaterials = new ArrayList<>();
-          System.out.println("\nIntroduce Materials (ENTER to finish):");
 
-          while (true) {
-            System.out.print("> ");
-            String materialInput = scanner.nextLine();
-
-            if (materialInput.trim().isEmpty()) {
-              break;
+          while (creatingProduct) {
+            switch (step) {
+              case 1:
+                System.out.println("Introduce Category: ");
+                choice = scanner.nextLine();
+                if (isBack(choice)) {step--;}
+                else {productCategory = choice; step++;}
+                break;
+              case 2:
+                System.out.println("Introduce Lifespan: ");
+                Boolean isCorrectLifespan = false;
+                while (!isCorrectLifespan) {
+                  try {
+                    choice = scanner.nextLine();
+                    if (!choice.trim().equalsIgnoreCase("q")) {
+                      int intChoice = Integer.parseInt(choice);
+                      if (intChoice < 1) {
+                        System.err.println("Lifespan should be a number greater than 0.");
+                      } else {
+                        isCorrectLifespan = true;
+                      }
+                    } else {step--;}
+                  } catch (Exception e) {
+                    isCorrectLifespan = false;
+                    System.err.println("Lifespan should be a number greater than 0.");
+                  }
+                }
+                if (isBack(choice)) {step--;}
+                else {step++;}
+                break;
+              case 3:
+                System.out.println("Introduce Materials: ");
+                boolean collectingMaterials = true;
+                while (collectingMaterials) {
+                  System.out.print("> ");
+                  String materialInput = scanner.nextLine().trim();
+                  if (materialInput.equalsIgnoreCase("q")) {
+                    step--; collectingMaterials = false;
+                  } else if (materialInput.isEmpty()) {
+                    step++; collectingMaterials = false;
+                  } else {
+                    productMaterials.add(materialInput);
+                  }
+                }
+                break;
+              case 4:
+                System.out.println("\nyippee!!");
+                System.out.println("Category: " + productCategory);
+                System.out.println("Lifespan: " + productLifespan);
+                System.out.println("Materials: " + productMaterials);
+              case 0:
+                creatingProduct = false;
+              default:
+                break;
             }
-
-            productMaterials.add(materialInput);
           }
 
-          System.out.println("\nyippee!!");
-          System.out.println("Category: " + productCategory);
-          System.out.println("Lifespan: " + productLifespan);
-          System.out.println("Materials: " + productMaterials);
           break;
         } else {
           break;
@@ -158,5 +197,9 @@ public class Menu {
   protected static Boolean handleExpectedUserInput(String choice, String... values) {
     String formattedChoice = choice.toLowerCase().trim();
     return !Arrays.asList(values).contains(formattedChoice) ? false : true;
+  }
+
+  protected static Boolean isBack(String choice) {
+    return handleExpectedUserInput(choice, "q");
   }
 }
