@@ -28,6 +28,33 @@ public class Menu {
   private static List<String> cb1 = Arrays.asList("a) Update name", "b) Update impact value",
       "c) Update recycling guidance", "q) Back");
 
+  private class MenuOption {
+    private char character;
+    private String title;
+    private Runnable function;
+
+    public MenuOption(char character, String title) {
+      this.character = character;
+      this.title = title;
+    }
+
+    public MenuOption(char character, String title, Runnable function) {
+      this.character = character;
+      this.title = title;
+      this.function = function;
+    }
+
+    public void setFunction(Runnable function) { 
+      this.function = function;
+    }
+
+    public void run() {
+      if (function != null) {
+        function.run();
+      }
+    }
+  }
+
   public static void startLoop() {
     boolean looping = true;
     while (looping) {
