@@ -6,31 +6,27 @@ import java.util.List;
 import se.hkr.ood.domain.Product;
 
 public class ProductRepository implements Repository {
-    public void create(Object object) {
-
-    }
-    
-    public void create(Product product) {
+    static public void create(Product product) {
 
     }
 
-    public Product read(String name) {
+    static public Product read(String name) {
         return new Product("product", "category", 1, new ArrayList<>());
     }
 
-    public void delete() {
+    static public void delete() {
 
     }
 
-    public void update(String attribute, String value) {
+    static public void update(String attribute, String value, Product product) {
 
     }
 
-    public List<Object> fetchAll() {
-        return new ArrayList<Object>();
+    static public List<Product> fetchAll() {
+        return new ArrayList<Product>();
     }
 
-    public Product parse(Object object) {
+    static public Product parse(Object object) {
         return new Product("product", "category", 1, new ArrayList<>());
     };
 }
