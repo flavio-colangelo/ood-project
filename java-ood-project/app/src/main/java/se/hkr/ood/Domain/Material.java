@@ -2,7 +2,7 @@ package se.hkr.ood.domain;
 
 import java.util.List;
 
-public class Material extends MaterialRepository {
+public class Material {
   private String name;
   private int impactValue;
   private List<String> recyclingGuidance;

@@ -2,7 +2,7 @@ package se.hkr.ood.domain;
 
 import java.util.List;
 
-public class Product extends ProductRepository {
+public class Product {
   private String name;
   private String category;
   private int enstimatedLifespan;
