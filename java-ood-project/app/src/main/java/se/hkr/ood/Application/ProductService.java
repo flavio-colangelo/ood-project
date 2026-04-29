@@ -20,6 +20,10 @@ public class ProductService {
         return ProductRepository.read(name);
     }
 
+    public static List<Product> listProducts() {
+        return ProductRepository.fetchAll();
+    }
+
     public static double environmentalImpact(Product product, EnviromentalImpactCalculator strategy) {
         return strategy.calculate(product);
     }
