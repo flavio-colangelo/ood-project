@@ -205,6 +205,13 @@ public class Menu {
     for (int i = 0; i < options.size(); i++) {
       System.out.println(options.get(i).toString());
     }
+    System.out.println("q) back");
+    System.out.print("> ");
+  }
+
+  protected static void displayOptions(String options) {
+    System.out.println(options);
+    System.out.println("q) back");
     System.out.print("> ");
   }
 
