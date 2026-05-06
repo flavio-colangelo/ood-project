@@ -15,7 +15,26 @@ public class Product {
     this.materials = materials;
   }
 
+  public Product() {
+  }
+
   public List<Material> getMaterials() {
     return this.materials;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public void setCategory(String category) {
+    this.category = category;
+  }
+
+  public void setLifespan(int num) {
+    this.enstimatedLifespan = num;
+  }
+
+  public void setMaterials(List<Material> materials) {
+    this.materials = materials;
   }
 }
