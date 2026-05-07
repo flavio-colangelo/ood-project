@@ -17,12 +17,26 @@ import java.util.List;
 
 class AppTest {
     @Test
-    void canGetGuidance() {
+    void MaterialCanGetGuidance() {
+        Material mat = new Material();
+        String name = "Glass Bottle";
+        int impact = 40;
+        List<String> guidance = Arrays.asList("Rinse out residue", "Sort by color if required");
 
-        Material mat = new Material("John", 7, Arrays.asList("one", "two"));
-        // Product prod = new Product("Baba", "Gigi", 3, Arrays.asList(mat));
-        List<String> cats = mat.getGuidance();
-        assertEquals(Arrays.asList("one", "two"), cats);
+        mat.setName(name);
+        mat.setImpactValue(impact);
+        mat.setRecyclingGuidance(guidance);
 
+        assertEquals(guidance, mat.getGuidance(), "Recycing guidance should be the same.");
+
+    }
+
+    @Test
+    void MaterialCanHandleNullGuidance() {
+        Material mat = new Material();
+        
+        mat.setRecyclingGuidance(null);
+        
+        assertNull(mat.getGuidance(), "Recycing guidance should be null.");
     }
 }
