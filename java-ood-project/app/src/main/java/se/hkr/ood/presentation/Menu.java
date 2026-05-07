@@ -107,14 +107,14 @@ public class Menu {
       if (name.trim().equalsIgnoreCase("q")) {
         return;
       }
-      Product product = new Product();
+      Product product = ProductService.createProduct();
       try {
         product = ProductService.fetchProduct(name);
       } catch (Exception e) {
         try {
           System.out.println("Product doesn't exist.");
-          product.setName(name);
-          product = createProduct(product, scanner);
+          ProductService.setName(product, name);
+          product = createProduct(product, scanner); // name
         } catch (Exception i) {
           return;
         }
@@ -129,8 +129,7 @@ public class Menu {
 
   private static Product createProduct(Product product, Scanner scanner) {
     while (true) {
-      Product sendAlong = new Product();
-      sendAlong = product;
+      Product sendAlong = product;
       displayOptions("Create a new product? (Y/N)");
       String choice = scanner.nextLine();
       if (choice.trim().equalsIgnoreCase("q")) {
@@ -138,7 +137,7 @@ public class Menu {
       }
       switch (choice.trim().toLowerCase()) {
         case "y":
-          sendAlong = createProduct1(sendAlong, scanner);
+          sendAlong = createProductStep1(sendAlong, scanner); // name
         case "n":
           throw new NullPointerException("No action taken");
         default:
@@ -151,49 +150,46 @@ public class Menu {
     }
   }
 
-  private static Product createProduct1(Product product, Scanner scanner) {
+  private static Product createProductStep1(Product product, Scanner scanner) {
     while (true) {
-      Product sendAlong = new Product();
-      sendAlong = product;
+      Product sendAlong = product; // name
       displayOptions("Insert Category");
       String choice = scanner.nextLine();
       if (choice.trim().equalsIgnoreCase("q")) {
-        return null;
+        return null; // name
       }
-      sendAlong.setCategory(choice);
-      sendAlong = createProduct2(sendAlong, scanner);
+      ProductService.setCategory(sendAlong, choice);
+      sendAlong = createProductStep2(sendAlong, scanner); // name category
       if (sendAlong != null) {
         return sendAlong;
       }
     }
   }
 
-  private static Product createProduct2(Product product, Scanner scanner) {
+  private static Product createProductStep2(Product product, Scanner scanner) {
     while (true) {
-      Product sendAlong = new Product();
-      sendAlong = product;
+      Product sendAlong = product; // name category
       displayOptions("Insert Category");
       String choice = scanner.nextLine();
       if (choice.trim().equalsIgnoreCase("q")) {
-        return null;
+        return null; // name category
       }
       try {
         int r = Integer.parseInt(choice);
-        sendAlong.setLifespan(r);
-        sendAlong = createProduct3(sendAlong, scanner);
+        ProductService.setlifespan(sendAlong, r); // name category lifespan
+        sendAlong = createProductStep3(sendAlong, scanner);
         if (sendAlong != null) {
           return sendAlong;
         }
-      } catch (Exception e) {
+      } catch (NumberFormatException e) {
         System.out.println("Invalid Lifespan");
       }
     }
   }
 
-  private static Product createProduct3(Product product, Scanner scanner) {
+  private static Product createProductStep3(Product product, Scanner scanner) {
     while (true) {
-      Product sendAlong = new Product();
-      sendAlong = product;
+      Product sendAlong = product;
       displayOptions("Insert Materials (ENTER to continue)");
       String choice;
       List<String> productMaterials = new ArrayList<>();
@@ -205,21 +201,16 @@ public class Menu {
         productMaterials.add(choice);
         System.out.print(">");
       } while (choice != "");
-      try {
+      if (productMaterials.size() > 0) {
         List<Material> materialList = new ArrayList<>();
         for (int i = 0; i < productMaterials.size(); i++) {
           try {
             materialList.add(MaterialService.fetchMaterial(productMaterials.get(i)));
           } catch (Exception e) {
-            System.out.println(productMaterials.get(i) + " doesn't exist");
-            try {
-              materialList.add(createMaterial(productMaterials.get(i), scanner));
-            } catch (Exception j) {
-              // throw something, needs to return all the way to the menu;
-            } finally {
-              if (materialList.get(i) == null) {
-                break;
-              }
+            System.out.println(materialList.get(i) + " doesn't exist.");
+            materialList.add(createMaterial(productMaterials.get(i), scanner));
+            if (materialList.get(i) == null) {
+              break;
             }
           }
         }
@@ -227,13 +218,30 @@ public class Menu {
           sendAlong.setMaterials(materialList);
           return sendAlong;
         }
-      } catch (Exception e) {
-        System.out.println("Product must have at least one material");
       }
     }
   }
 
   private static Material createMaterial(String name, Scanner scanner) {
-
+    while (true) {
+      Material sendAlong = new Material(name);
+      displayOptions("Create a new Material? (Y/N)");
+      String choice = scanner.nextLine();
+      if (choice.trim().equalsIgnoreCase("q")) {
+        return null;
+      }
+      switch (choice.trim().toLowerCase()) {
+        case "y":
+          sendAlong = createMaterialStep1(sendAlong, scanner);
+        case "n":
+          throw new NullPointerException("No action taken");
+        default:
+          System.out.println("Invalid option");
+          break;
+      }
+      if (sendAlong != null) {
+        return sendAlong;
+      }
+    }
   }
 }
