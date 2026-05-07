@@ -20,7 +20,7 @@ public class ProductService {
         return ProductRepository.read(name);
     }
 
-    public static double environmentalImpact(Product product, EnviromentalImpactCalculator strategy) {
+    public static double enviromentalImpact(Product product, EnviromentalImpactCalculator strategy) {
         return strategy.calculate(product);
     }
 
