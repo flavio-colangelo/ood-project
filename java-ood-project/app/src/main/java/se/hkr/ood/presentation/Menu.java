@@ -234,6 +234,6 @@ public class Menu {
   }
 
   private static Material createMaterial(String name, Scanner scanner) {
-
+    return new Material("name", 1, Arrays.asList("DO something"));
   }
 }
