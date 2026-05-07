@@ -7,9 +7,35 @@ import java.util.List;
 
 public class MaterialService {
 
-    public static void createMaterial(String name, int impactValue, List<String> guidance) {
+    public static Material generateMaterial() {
+        Material material = new Material();
+        return material;
+    }
+
+    public static Material setName(Material material, String name) {
+        material.setName(name);
+        return material;
+    }
+
+    public static Material setImpactValue(Material material, int impactValue) {
+        material.setImpactValue(impactValue);
+        return material;
+    }
+
+    public static Material setRecyclingGuidance(Material material, List<String> guidance) {
+        material.setRecyclingGuidance(guidance);
+        return material;
+    }
+
+    public static Material createMaterial(String name, int impactValue, List<String> guidance) {
         Material material = new Material(name, impactValue, guidance);
         MaterialRepository.create(material);
+        return material;
+    }
+
+    public static Material createMaterial(Material material) {
+        MaterialRepository.create(material);
+        return material;
     }
 
     public static Material fetchMaterial(String name) {
