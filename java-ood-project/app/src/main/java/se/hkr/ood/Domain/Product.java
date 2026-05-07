@@ -2,7 +2,7 @@ package se.hkr.ood.domain;
 
 import java.util.List;
 
-public class Product extends ProductRepository {
+public class Product {
   private String name;
   private String category;
   private int enstimatedLifespan;
@@ -15,7 +15,26 @@ public class Product extends ProductRepository {
     this.materials = materials;
   }
 
+  public Product() {
+  }
+
   public List<Material> getMaterials() {
     return this.materials;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public void setCategory(String category) {
+    this.category = category;
+  }
+
+  public void setLifespan(int num) {
+    this.enstimatedLifespan = num;
+  }
+
+  public void setMaterials(List<Material> materials) {
+    this.materials = materials;
   }
 }

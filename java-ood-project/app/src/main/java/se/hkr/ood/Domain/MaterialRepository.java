@@ -5,32 +5,28 @@ import java.util.List;
 
 import se.hkr.ood.domain.Material;
 
-public class MaterialRepository implements Repository {
-    public void create(Object object) {
-
-    }
-    
-    public void create(Material material) {
+public class MaterialRepository {
+    static public void create(Material material) {
 
     }
 
-    public Material read(String name) {
-        return new Material("material", 1, new ArrayList<>());
+    static public Material read(String name) {
+        return new Material("name", 1, new ArrayList<>());
     }
 
-    public void delete() {
-
-    }
-
-    public void update(String attribute, String value) {
+    static public void delete() {
 
     }
 
-    public List<Object> fetchAll() {
-        return new ArrayList<Object>();
+    static public void update(String attribute, String value, Material material) {
+
     }
 
-    public Material parse(Object object) {
-        return new Material("material", 1, new ArrayList<>());
+    static public List<Material> fetchAll() {
+        return new ArrayList<Material>();
+    }
+
+    static public Material parse(Object object) {
+        return new Material("name", 1, new ArrayList<>());
     };
 }

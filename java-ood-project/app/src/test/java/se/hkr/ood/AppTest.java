@@ -5,14 +5,24 @@ package se.hkr.ood;
 
 import org.junit.jupiter.api.Test;
 
-//import se.hkr.ood.App;
+import se.hkr.ood.App;
+import se.hkr.ood.domain.Material;
+import se.hkr.ood.domain.Product;
 
-// import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 class AppTest {
     @Test
-    void appHasAGreeting() {
-        // App classUnderTest = new App();
-        // assertNotNull(classUnderTest.getGreeting(), "app should have a greeting");
+    void canGetGuidance() {
+
+        Material mat = new Material("John", 7, Arrays.asList("one", "two"));
+        // Product prod = new Product("Baba", "Gigi", 3, Arrays.asList(mat));
+        List<String> cats = mat.getGuidance();
+        assertEquals(Arrays.asList("one", "two"), cats);
+
     }
 }
