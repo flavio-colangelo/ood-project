@@ -2,6 +2,8 @@ package se.hkr.ood.presentation;
 
 import se.hkr.ood.application.MaterialService;
 import se.hkr.ood.application.ProductService;
+import se.hkr.ood.domain.Product;
+import se.hkr.ood.domain.Material;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,130 +47,13 @@ public class Menu {
   // impact value",
   // "c) Update recycling guidance", "q) Back");
 
-  private static String back = "q) Back";
-
-  private static void fetchProductOption(Scanner scanner) {
-    // System.out.println("This fetches the product!");
-    // List<MenuOption> fetchProduct = new LinkedList<>();
-    // fetchProduct.add(new MenuOption(() -> {}, "Insert Name", back));
-    // fetchProduct.add(new MenuOption(() -> {}, "Calculate impact value?"));
-    System.out.println("Insert name");
-    System.out.println(back);
-    String choice = scanner.nextLine();
-    Boolean continuing = true;
-    while (continuing) {
-      if (!choice.trim().equalsIgnoreCase("")) {
-        if (choice.trim().equalsIgnoreCase("q")) {
-          continuing = false;
-          break;
-        }
-
-        System.out.println("The Product doesn't exist\nCreate new Product? (Y/N)");
-        choice = scanner.nextLine();
-
-        if (handleExpectedUserInput(choice, "y")) {
-          int step = 1;
-          boolean creatingProduct = true;
-
-          String productCategory = "";
-          int productLifespan = 0;
-          List<String> productMaterials = new ArrayList<>();
-
-          while (creatingProduct) {
-            switch (step) {
-              case 1:
-                System.out.println("Introduce Category: ");
-                choice = scanner.nextLine();
-                if (isBack(choice)) {
-                  step--;
-                } else {
-                  productCategory = choice;
-                  step++;
-                }
-                break;
-              case 2:
-                System.out.println("Introduce Lifespan: ");
-                Boolean isCorrectLifespan = false;
-                while (!isCorrectLifespan) {
-                  try {
-                    choice = scanner.nextLine();
-                    if (!choice.trim().equalsIgnoreCase("q")) {
-                      int intChoice = Integer.parseInt(choice);
-                      if (intChoice < 1) {
-                        System.err.println("Lifespan should be a number greater than 0.");
-                      } else {
-                        isCorrectLifespan = true;
-                      }
-                    } else {
-                      step--;
-                    }
-                  } catch (Exception e) {
-                    isCorrectLifespan = false;
-                    System.err.println("Lifespan should be a number greater than 0.");
-                  }
-                }
-                if (isBack(choice)) {
-                  step--;
-                } else {
-                  step++;
-                }
-                break;
-              case 3:
-                System.out.println("Introduce Materials: ");
-                boolean collectingMaterials = true;
-                while (collectingMaterials) {
-                  System.out.print("> ");
-                  String materialInput = scanner.nextLine().trim();
-                  if (materialInput.equalsIgnoreCase("q")) {
-                    step--;
-                    collectingMaterials = false;
-                  } else if (materialInput.isEmpty()) {
-                    step++;
-                    collectingMaterials = false;
-                  } else {
-                    productMaterials.add(materialInput);
-                  }
-                }
-                break;
-              case 4:
-                System.out.println("\nyippee!!");
-                System.out.println("Category: " + productCategory);
-                System.out.println("Lifespan: " + productLifespan);
-                System.out.println("Materials: " + productMaterials);
-              case 0:
-                creatingProduct = false;
-              default:
-                break;
-            }
-          }
-
-          break;
-        } else {
-          break;
-        }
-
-      } else {
-        System.err.println("Input cannot be empty.");
-        choice = scanner.nextLine();
-      }
-    }
-  }
-
   private static void listProductOption() {
     System.out.println("This lists the product!");
   }
 
+  // get the option with the corresponding character (or throw NoSuchElement!!)
   private static void runOption(String choice) {
-    MenuOption chosenOption = options.stream().filter(o -> o.getCharacter().equalsIgnoreCase(choice)).findFirst().get(); // get
-                                                                                                                         // the
-                                                                                                                         // option
-                                                                                                                         // with
-                                                                                                                         // the
-                                                                                                                         // corresponding
-                                                                                                                         // character
-                                                                                                                         // (or
-                                                                                                                         // throw
-                                                                                                                         // NoSuchElement!!)
+    MenuOption chosenOption = options.stream().filter(o -> o.getCharacter().equalsIgnoreCase(choice)).findFirst().get();
     chosenOption.run();
   }
 
@@ -181,6 +66,20 @@ public class Menu {
     options.add(new MenuOption("b", "List Product", () -> {
       listProductOption();
     }));
+  }
+
+  protected static void displayOptions(List<MenuOption> options) {
+    for (int i = 0; i < options.size(); i++) {
+      System.out.println(options.get(i).toString());
+    }
+    System.out.println("q) back");
+    System.out.print("> ");
+  }
+
+  protected static void displayOptions(String options) {
+    System.out.println(options);
+    System.out.println("q) back");
+    System.out.print("> ");
   }
 
   public static void startLoop() {
@@ -201,30 +100,140 @@ public class Menu {
     }
   }
 
-  protected static void displayOptions(List<MenuOption> options) {
-    for (int i = 0; i < options.size(); i++) {
-      System.out.println(options.get(i).toString());
+  private static void fetchProductOption(Scanner scanner) {
+    while (true) {
+      displayOptions("Insert name.");
+      String name = scanner.nextLine();
+      if (name.trim().equalsIgnoreCase("q")) {
+        return;
+      }
+      Product product = new Product();
+      try {
+        product = ProductService.fetchProduct(name);
+      } catch (Exception e) {
+        try {
+          System.out.println("Product doesn't exist.");
+          product.setName(name);
+          product = createProduct(product, scanner);
+        } catch (Exception i) {
+          return;
+        }
+      } finally {
+        if (product != null) {
+          // TODO
+          // show the product and ask for additional action
+        }
+      }
     }
-    System.out.println("q) back");
-    System.out.print("> ");
   }
 
-  protected static void displayOptions(String options) {
-    System.out.println(options);
-    System.out.println("q) back");
-    System.out.print("> ");
+  private static Product createProduct(Product product, Scanner scanner) {
+    while (true) {
+      Product sendAlong = new Product();
+      sendAlong = product;
+      displayOptions("Create a new product? (Y/N)");
+      String choice = scanner.nextLine();
+      if (choice.trim().equalsIgnoreCase("q")) {
+        return null;
+      }
+      switch (choice.trim().toLowerCase()) {
+        case "y":
+          sendAlong = createProduct1(sendAlong, scanner);
+        case "n":
+          throw new NullPointerException("No action taken");
+        default:
+          System.out.println("Invalid option");
+          break;
+      }
+      if (sendAlong != null) {
+        return sendAlong;
+      }
+    }
   }
 
-  protected static String handleUserInput() {
-    return "x";
+  private static Product createProduct1(Product product, Scanner scanner) {
+    while (true) {
+      Product sendAlong = new Product();
+      sendAlong = product;
+      displayOptions("Insert Category");
+      String choice = scanner.nextLine();
+      if (choice.trim().equalsIgnoreCase("q")) {
+        return null;
+      }
+      sendAlong.setCategory(choice);
+      sendAlong = createProduct2(sendAlong, scanner);
+      if (sendAlong != null) {
+        return sendAlong;
+      }
+    }
   }
 
-  protected static Boolean handleExpectedUserInput(String choice, String... values) {
-    String formattedChoice = choice.toLowerCase().trim();
-    return !Arrays.asList(values).contains(formattedChoice) ? false : true;
+  private static Product createProduct2(Product product, Scanner scanner) {
+    while (true) {
+      Product sendAlong = new Product();
+      sendAlong = product;
+      displayOptions("Insert Category");
+      String choice = scanner.nextLine();
+      if (choice.trim().equalsIgnoreCase("q")) {
+        return null;
+      }
+      try {
+        int r = Integer.parseInt(choice);
+        sendAlong.setLifespan(r);
+        sendAlong = createProduct3(sendAlong, scanner);
+        if (sendAlong != null) {
+          return sendAlong;
+        }
+      } catch (Exception e) {
+        System.out.println("Invalid Lifespan");
+      }
+    }
   }
 
-  protected static Boolean isBack(String choice) {
-    return handleExpectedUserInput(choice, "q");
+  private static Product createProduct3(Product product, Scanner scanner) {
+    while (true) {
+      Product sendAlong = new Product();
+      sendAlong = product;
+      displayOptions("Insert Materials (ENTER to continue)");
+      String choice;
+      List<String> productMaterials = new ArrayList<>();
+      do {
+        choice = scanner.nextLine();
+        if (choice.trim().equalsIgnoreCase("q")) {
+          return null;
+        }
+        productMaterials.add(choice);
+        System.out.print(">");
+      } while (choice != "");
+      try {
+        List<Material> materialList = new ArrayList<>();
+        for (int i = 0; i < productMaterials.size(); i++) {
+          try {
+            materialList.add(MaterialService.fetchMaterial(productMaterials.get(i)));
+          } catch (Exception e) {
+            System.out.println(productMaterials.get(i) + " doesn't exist");
+            try {
+              materialList.add(createMaterial(productMaterials.get(i), scanner));
+            } catch (Exception j) {
+              // throw something, needs to return all the way to the menu;
+            } finally {
+              if (materialList.get(i) == null) {
+                break;
+              }
+            }
+          }
+        }
+        if (materialList.size() == productMaterials.size()) {
+          sendAlong.setMaterials(materialList);
+          return sendAlong;
+        }
+      } catch (Exception e) {
+        System.out.println("Product must have at least one material");
+      }
+    }
+  }
+
+  private static Material createMaterial(String name, Scanner scanner) {
+    return new Material("name", 1, Arrays.asList("DO something"));
   }
 }
