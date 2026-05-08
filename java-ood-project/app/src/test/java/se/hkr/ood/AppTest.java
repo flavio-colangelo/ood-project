@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import se.hkr.ood.App;
 import se.hkr.ood.domain.Material;
+import se.hkr.ood.domain.MaterialRepository;
 import se.hkr.ood.domain.Product;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,7 +29,6 @@ class AppTest {
         mat.setRecyclingGuidance(guidance);
 
         assertEquals(guidance, mat.getGuidance(), "Recycing guidance should be the same.");
-
     }
 
     @Test
@@ -38,5 +38,40 @@ class AppTest {
         mat.setRecyclingGuidance(null);
         
         assertNull(mat.getGuidance(), "Recycing guidance should be null.");
+    }
+
+    @Test
+    void MaterialCreationRunsFully() {
+        Material mat = new Material();
+
+        assertDoesNotThrow(() -> MaterialRepository.create(mat), "Material creation should not throw errors.");
+    }
+
+    @Test
+    void MaterialDeletionRunsFully() {
+        assertDoesNotThrow(() -> MaterialRepository.delete(), "Material deletion should not throw an exception.");
+    }
+
+    @Test
+    void MaterialUpdatingRunsFully() {
+        Material mat = new Material();
+
+        assertDoesNotThrow(() -> MaterialRepository.update("impactValue", "10", mat), 
+                "Material updating should not throw an exception.");
+    }
+
+    @Test
+    void MaterialCanFetchAll() {
+        List<Material> res = MaterialRepository.fetchAll();
+
+        assertNotNull(res, "FetchAll should return a list, not null.");
+        assertTrue(res.isEmpty(), "FetchAll should currently return an empty list based on the stub.");
+    }
+
+    @Test
+    void testParseReturnsDummyMaterial() {
+        Object dummy = new Object();
+
+        assertThrows(Exception.class, () -> {MaterialRepository.parse(dummy);}, "Material parsing of a non-material should throw an exception");
     }
 }
