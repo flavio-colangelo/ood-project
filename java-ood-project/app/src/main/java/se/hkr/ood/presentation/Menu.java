@@ -4,6 +4,7 @@ import se.hkr.ood.application.MaterialService;
 import se.hkr.ood.application.ProductService;
 import se.hkr.ood.domain.Product;
 import se.hkr.ood.domain.Material;
+import se.hkr.ood.exceptions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,51 +14,21 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Menu {
-  // private static List<String> basic = Arrays.asList("a) Fetch Product", "b)
-  // List all Products", "c) Other", "q) Exit");
-  // private static List<String> a = Arrays.asList("Insert name", "q) Back");
-  // private static List<String> a1 = Arrays.asList("The Product doesn't exist",
-  // "Create new Product? (Y/N)", "q) Back");
-  // private static List<String> a11 = Arrays.asList("Introduce category", "q)
-  // Back");
-  // private static List<String> a12 = Arrays.asList("Introduce lifespan", "q)
-  // Back");
-  // private static List<String> a13 = Arrays.asList("Introduce materials (ENTER
-  // to confirm)", "q) Back");
-  // private static List<String> a131 = Arrays.asList("doesn't exist", "Create new
-  // Material? (Y/N)", "q) Back");
-  // private static List<String> a132 = Arrays.asList("Introduce impact value",
-  // "q) Back");
-  // private static List<String> a133 = Arrays.asList("Introduce recycling
-  // guidance", "q) Back");
-  // private static List<String> a2 = Arrays.asList("Calculate impact value?", "a)
-  // Simple Sum Strategy",
-  // "b) Weighted by Lifespan Strategy", "q) Back");
-  // private static List<String> back = Arrays.asList("q) Back");
-  // private static List<String> c = Arrays.asList("a) Update Product", "b) Update
-  // Material", "q) Back");
-  // private static List<String> ca = Arrays.asList("Insert Product name", "q)
-  // Back");
-  // private static List<String> ca1 = Arrays.asList("a) Update name", "b) Update
-  // category",
-  // "c) Update estimated lifespan", "Update Materials", "q) Back");
-  // private static List<String> cb = Arrays.asList("Insert Material name", "q)
-  // Back");
-  // private static List<String> cb1 = Arrays.asList("a) Update name", "b) Update
-  // impact value",
-  // "c) Update recycling guidance", "q) Back");
-
   private static void listProductOption() {
     System.out.println("This lists the product!");
   }
 
   // get the option with the corresponding character (or throw NoSuchElement!!)
-  private static void runOption(String choice) {
+  private static void runOption(List<MenuOption> options, String choice) {
     MenuOption chosenOption = options.stream().filter(o -> o.getCharacter().equalsIgnoreCase(choice)).findFirst().get();
     chosenOption.run();
   }
 
   private static List<MenuOption> options = new ArrayList<>();
+  private static List<MenuOption> impactValue = new ArrayList<>();
+  private static List<MenuOption> otherOptions = new ArrayList<>();
+  private static List<MenuOption> updateProduct = new ArrayList<>();
+  private static List<MenuOption> updateMaterial = new ArrayList<>();
 
   private static void init(Scanner scanner) {
     options.add(new MenuOption("a", "Fetch Product", () -> {
@@ -65,6 +36,48 @@ public class Menu {
     }));
     options.add(new MenuOption("b", "List Product", () -> {
       listProductOption();
+    }));
+    options.add(new MenuOption("c", "Other", () -> {
+      genericLoop(otherOptions, scanner);
+    }));
+    otherOptions.add(new MenuOption("a", "Update Product", () -> {
+      updateProduct(scanner);
+    }));
+    otherOptions.add(new MenuOption("b", "Update Material", () -> {
+      updateMaterial(scanner);
+    }));
+  }
+
+  private static void init(Scanner scanner, Product product) {
+    impactValue.add(new MenuOption("a", "Simple Sum Strategy", () -> {
+      // TODO
+    }));
+    impactValue.add(new MenuOption("b", "Weighted by Lifespan Strategy", () -> {
+      // TODO
+    }));
+    updateProduct.add(new MenuOption("a", "Update Name", () -> {
+      productUpdateName(product, scanner);
+    }));
+    updateProduct.add(new MenuOption("b", "Update Category", () -> {
+      productUpdateCategory(product, scanner);
+    }));
+    updateProduct.add(new MenuOption("c", "Update Lifespan", () -> {
+      productUpdateLifespan(product, scanner);
+    }));
+    updateProduct.add(new MenuOption("d", "Update Materials", () -> {
+      createProductStep3(product, scanner);
+    }));
+  }
+
+  private static void init(Scanner scanner, Material material) {
+    updateMaterial.add(new MenuOption("a", "Update Name", () -> {
+      materialUpdateName(material, scanner);
+    }));
+    updateMaterial.add(new MenuOption("b", "Update Impact Value", () -> {
+      materialUpdateImpactValue(material, scanner);
+    }));
+    updateMaterial.add(new MenuOption("c", "Update Recycling Guidance", () -> {
+      materialUpdateRecyclingGuidance(material, scanner);
     }));
   }
 
@@ -82,22 +95,26 @@ public class Menu {
     System.out.print("> ");
   }
 
-  public static void startLoop() {
-    Scanner scanner = new Scanner(System.in);
-    init(scanner);
-    String choice;
+  private static void genericLoop(List<MenuOption> options, Scanner scanner) {
     while (true) {
+      String choice;
       displayOptions(options);
       choice = scanner.nextLine();
       if (choice.trim().equalsIgnoreCase("q")) {
         return;
       }
       try {
-        runOption(choice.toLowerCase().trim());
+        runOption(options, choice.toLowerCase().trim());
       } catch (Exception e) {
         System.err.println(e.getMessage());
       }
     }
+  }
+
+  public static void startLoop() {
+    Scanner scanner = new Scanner(System.in);
+    init(scanner);
+    genericLoop(options, scanner);
   }
 
   private static void fetchProductOption(Scanner scanner) {
@@ -107,21 +124,22 @@ public class Menu {
       if (name.trim().equalsIgnoreCase("q")) {
         return;
       }
-      Product product = ProductService.createProduct();
+      Product product = ProductService.generateProduct();
       try {
         product = ProductService.fetchProduct(name);
-      } catch (Exception e) {
+      } catch (ProductNotFoundException e) {
         try {
           System.out.println("Product doesn't exist.");
           ProductService.setName(product, name);
-          product = createProduct(product, scanner); // name
-        } catch (Exception i) {
+          product = createProduct(product, scanner);
+        } catch (NoActionSelectedException i) {
           return;
         }
       } finally {
         if (product != null) {
-          // TODO
-          // show the product and ask for additional action
+          init(scanner, product);
+          System.out.println("Calculate impact value?");
+          genericLoop(impactValue, scanner);
         }
       }
     }
@@ -137,9 +155,9 @@ public class Menu {
       }
       switch (choice.trim().toLowerCase()) {
         case "y":
-          sendAlong = createProductStep1(sendAlong, scanner); // name
+          sendAlong = createProductStep1(sendAlong, scanner);
         case "n":
-          throw new NullPointerException("No action taken");
+          throw new NoActionSelectedException("No action taken");
         default:
           System.out.println("Invalid option");
           break;
@@ -152,14 +170,14 @@ public class Menu {
 
   private static Product createProductStep1(Product product, Scanner scanner) {
     while (true) {
-      Product sendAlong = product; // name
+      Product sendAlong = product;
       displayOptions("Insert Category");
       String choice = scanner.nextLine();
       if (choice.trim().equalsIgnoreCase("q")) {
-        return null; // name
+        return null;
       }
       ProductService.setCategory(sendAlong, choice);
-      sendAlong = createProductStep2(sendAlong, scanner); // name category
+      sendAlong = createProductStep2(sendAlong, scanner);
       if (sendAlong != null) {
         return sendAlong;
       }
@@ -168,15 +186,15 @@ public class Menu {
 
   private static Product createProductStep2(Product product, Scanner scanner) {
     while (true) {
-      Product sendAlong = product; // name category
+      Product sendAlong = product;
       displayOptions("Insert Category");
       String choice = scanner.nextLine();
       if (choice.trim().equalsIgnoreCase("q")) {
-        return null; // name category
+        return null;
       }
       try {
         int r = Integer.parseInt(choice);
-        ProductService.setlifespan(sendAlong, r); // name category lifespan
+        ProductService.setlifespan(sendAlong, r);
         sendAlong = createProductStep3(sendAlong, scanner);
         if (sendAlong != null) {
           return sendAlong;
@@ -193,20 +211,21 @@ public class Menu {
       displayOptions("Insert Materials (ENTER to continue)");
       String choice;
       List<String> productMaterials = new ArrayList<>();
-      do {
+      choice = scanner.nextLine();
+      while (choice != "") {
+        productMaterials.add(choice);
+        System.out.print(">");
         choice = scanner.nextLine();
         if (choice.trim().equalsIgnoreCase("q")) {
           return null;
         }
-        productMaterials.add(choice);
-        System.out.print(">");
-      } while (choice != "");
+      }
       if (productMaterials.size() > 0) {
         List<Material> materialList = new ArrayList<>();
         for (int i = 0; i < productMaterials.size(); i++) {
           try {
             materialList.add(MaterialService.fetchMaterial(productMaterials.get(i)));
-          } catch (Exception e) {
+          } catch (MaterialNotFoundException e) {
             System.out.println(materialList.get(i) + " doesn't exist.");
             materialList.add(createMaterial(productMaterials.get(i), scanner));
             if (materialList.get(i) == null) {
@@ -218,13 +237,16 @@ public class Menu {
           sendAlong.setMaterials(materialList);
           return sendAlong;
         }
+      } else {
+        System.out.println("At least one Material is required");
       }
     }
   }
 
   private static Material createMaterial(String name, Scanner scanner) {
     while (true) {
-      Material sendAlong = new Material(name);
+      Material sendAlong = MaterialService.generateMaterial();
+      MaterialService.setName(sendAlong, name);
       displayOptions("Create a new Material? (Y/N)");
       String choice = scanner.nextLine();
       if (choice.trim().equalsIgnoreCase("q")) {
@@ -234,7 +256,7 @@ public class Menu {
         case "y":
           sendAlong = createMaterialStep1(sendAlong, scanner);
         case "n":
-          throw new NullPointerException("No action taken");
+          throw new NoActionSelectedException("No action taken");
         default:
           System.out.println("Invalid option");
           break;
@@ -242,6 +264,172 @@ public class Menu {
       if (sendAlong != null) {
         return sendAlong;
       }
+    }
+  }
+
+  private static Material createMaterialStep1(Material material, Scanner scanner) {
+    while (true) {
+      Material sendAlong = material;
+      displayOptions("Insert Impact Value");
+      String choice = scanner.nextLine();
+      if (choice.trim().equalsIgnoreCase("q")) {
+        return null;
+      }
+      try {
+        int r = Integer.parseInt(choice);
+        MaterialService.setImpactValue(material, r);
+        sendAlong = createMaterialStep2(sendAlong, scanner);
+        if (sendAlong != null) {
+          return sendAlong;
+        }
+      } catch (NumberFormatException e) {
+        System.out.println("Invalid Impact Value");
+      }
+    }
+  }
+
+  private static Material createMaterialStep2(Material material, Scanner scanner) {
+    while (true) {
+      Material sendAlong = material;
+      displayOptions("Insert Recycling Guidance (ENTER to continue)");
+      String choice = scanner.nextLine();
+      List<String> recyclingGuidance = new ArrayList<>();
+      if (choice.trim().equalsIgnoreCase("q")) {
+        return null;
+      }
+      while (choice != "") {
+        recyclingGuidance.add(choice);
+        System.out.print(">");
+        choice = scanner.nextLine();
+        if (choice.trim().equalsIgnoreCase("q")) {
+          return null;
+        }
+      }
+      if (recyclingGuidance.size() > 0) {
+        sendAlong = MaterialService.setRecyclingGuidance(sendAlong, recyclingGuidance);
+        return sendAlong;
+      } else {
+        System.out.println("Please add a Recycling Guidance");
+      }
+    }
+  }
+
+  private static void updateProduct(Scanner scanner) {
+    while (true) {
+      displayOptions("Insert Product name.");
+      String name = scanner.nextLine();
+      if (name.trim().equalsIgnoreCase("q")) {
+        return;
+      }
+      Product product = ProductService.generateProduct();
+      try {
+        product = ProductService.fetchProduct(name);
+        init(scanner, product);
+        genericLoop(updateProduct, scanner);
+      } catch (ProductNotFoundException e) {
+        System.out.println("Product doesn't exist, try again");
+      } catch (NoActionSelectedException e) {
+        return;
+      }
+    }
+  }
+
+  private static void updateMaterial(Scanner scanner) {
+    while (true) {
+      displayOptions("Insert Material name.");
+      String name = scanner.nextLine();
+      if (name.trim().equalsIgnoreCase("q")) {
+        return;
+      }
+      Material material = MaterialService.generateMaterial();
+      try {
+        material = MaterialService.fetchMaterial(name);
+        init(scanner, material);
+        genericLoop(updateMaterial, scanner);
+      } catch (ProductNotFoundException e) {
+        System.out.println("Product doesn't exist, try again");
+      }
+    }
+  }
+
+  private static void productUpdateName(Product product, Scanner scanner) {
+    displayOptions("Insert new Name");
+    String choice = scanner.nextLine();
+    if (choice.trim().equalsIgnoreCase("q")) {
+      return;
+    }
+    ProductService.setName(product, choice);
+  }
+
+  private static void productUpdateCategory(Product product, Scanner scanner) {
+    displayOptions("Insert new Category");
+    String choice = scanner.nextLine();
+    if (choice.trim().equalsIgnoreCase("q")) {
+      return;
+    }
+    ProductService.setCategory(product, choice);
+  }
+
+  private static void productUpdateLifespan(Product product, Scanner scanner) {
+    while (true) {
+      displayOptions("Insert new Lifespan");
+      String choice = scanner.nextLine();
+      if (choice.trim().equalsIgnoreCase("q")) {
+        return;
+      }
+      try {
+        int r = Integer.parseInt(choice);
+        ProductService.setlifespan(product, r);
+        return;
+      } catch (NumberFormatException e) {
+        System.out.println("Invalid Lifespan");
+      }
+    }
+  }
+
+  private static void materialUpdateName(Material material, Scanner scanner) {
+    displayOptions("Insert new Name");
+    String choice = scanner.nextLine();
+    if (choice.trim().equalsIgnoreCase("q")) {
+      return;
+    }
+    MaterialService.setName(material, choice);
+  }
+
+  private static void materialUpdateImpactValue(Material material, Scanner scanner) {
+    displayOptions("Insert new Impact Value");
+    String choice = scanner.nextLine();
+    if (choice.trim().equalsIgnoreCase("q")) {
+      return;
+    }
+    try {
+      int r = Integer.parseInt(choice);
+      material = MaterialService.setImpactValue(material, r);
+      return;
+    } catch (NumberFormatException e) {
+      System.out.println("Invalid Impact Value");
+    }
+  }
+
+  private static void materialUpdateRecyclingGuidance(Material material, Scanner scanner) {
+    displayOptions("Insert new Recycling Guidance (ENTER to continue)");
+    String choice = scanner.nextLine();
+    List<String> recyclingGuidance = new ArrayList<>();
+    if (choice.trim().equalsIgnoreCase("q")) {
+      return;
+    }
+    while (choice != "") {
+      recyclingGuidance.add(choice);
+      System.out.print(">");
+      choice = scanner.nextLine();
+      if (choice.trim().equalsIgnoreCase("q")) {
+        return;
+      }
+    }
+    if (recyclingGuidance.size() > 0) {
+      material = MaterialService.setRecyclingGuidance(material, recyclingGuidance);
+    } else {
+      System.out.println("Please add a Recycling Guidance");
     }
   }
 }
