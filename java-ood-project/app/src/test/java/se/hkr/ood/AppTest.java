@@ -74,4 +74,42 @@ class AppTest {
 
         assertThrows(Exception.class, () -> {MaterialRepository.parse(dummy);}, "Material parsing of a non-material should throw an exception");
     }
+
+    @Test
+    void ProductCanGetMaterials() {
+        Product prod = new Product();
+        List<Material> materials = Arrays.asList(new Material(), new Material());
+
+        prod.setMaterials(materials);
+
+        assertEquals(materials, prod.getMaterials(), "Materials list should be the same.");
+    }
+
+    @Test
+    void ProductCanHandleNullMaterials() {
+        Product prod = new Product();
+        
+        prod.setMaterials(null);
+        
+        assertNull(prod.getMaterials(), "Materials list should be null.");
+    }
+
+    @Test
+    void ProductConstructorSetsMaterials() {
+        List<Material> materials = Arrays.asList(new Material());
+        Product prod = new Product("Smartphone", "Electronics", 4, materials);
+
+        assertEquals(materials, prod.getMaterials(), "Constructor should set the materials list correctly.");
+    }
+
+    @Test
+    void ProductSettersRunFully() {
+        Product prod = new Product();
+
+        assertDoesNotThrow(() -> {
+            prod.setName("Magic Staff");
+            prod.setCategory("Tool");
+            prod.setLifespan(57);
+        }, "Setting product properties should not throw errors.");
+    }
 }
