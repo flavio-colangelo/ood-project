@@ -38,7 +38,7 @@ public class Menu {
       listProductOption();
     }));
     options.add(new MenuOption("c", "Other", () -> {
-      genericLoop(otherOptions, scanner);
+      genericOptionsLoop(otherOptions, scanner);
     }));
     otherOptions.add(new MenuOption("a", "Update Product", () -> {
       updateProduct(scanner);
@@ -95,7 +95,7 @@ public class Menu {
     System.out.print("> ");
   }
 
-  private static void genericLoop(List<MenuOption> options, Scanner scanner) {
+  private static void genericOptionsLoop(List<MenuOption> options, Scanner scanner) {
     while (true) {
       String choice;
       displayOptions(options);
@@ -114,7 +114,8 @@ public class Menu {
   public static void startLoop() {
     Scanner scanner = new Scanner(System.in);
     init(scanner);
-    genericLoop(options, scanner);
+    genericOptionsLoop(options, scanner);
+    scanner.close();
   }
 
   private static void fetchProductOption(Scanner scanner) {
@@ -139,7 +140,7 @@ public class Menu {
         if (product != null) {
           init(scanner, product);
           System.out.println("Calculate impact value?");
-          genericLoop(impactValue, scanner);
+          genericOptionsLoop(impactValue, scanner);
         }
       }
     }
@@ -214,7 +215,7 @@ public class Menu {
       choice = scanner.nextLine();
       while (choice != "") {
         productMaterials.add(choice);
-        System.out.print(">");
+        System.out.print("> ");
         choice = scanner.nextLine();
         if (choice.trim().equalsIgnoreCase("q")) {
           return null;
@@ -325,7 +326,7 @@ public class Menu {
       try {
         product = ProductService.fetchProduct(name);
         init(scanner, product);
-        genericLoop(updateProduct, scanner);
+        genericOptionsLoop(updateProduct, scanner);
       } catch (ProductNotFoundException e) {
         System.out.println("Product doesn't exist, try again");
       } catch (NoActionSelectedException e) {
@@ -345,7 +346,7 @@ public class Menu {
       try {
         material = MaterialService.fetchMaterial(name);
         init(scanner, material);
-        genericLoop(updateMaterial, scanner);
+        genericOptionsLoop(updateMaterial, scanner);
       } catch (ProductNotFoundException e) {
         System.out.println("Product doesn't exist, try again");
       }
