@@ -11,7 +11,7 @@ public class MaterialRepository {
     }
 
     static public Material read(String name) {
-        return new Material("name", 1, new ArrayList<>());
+        return null;
     }
 
     static public void delete() {
@@ -23,10 +23,10 @@ public class MaterialRepository {
     }
 
     static public List<Material> fetchAll() {
-        return new ArrayList<Material>();
+        return null;
     }
 
     static public Material parse(Object object) {
-        return new Material("name", 1, new ArrayList<>());
+        return null;
     };
 }
