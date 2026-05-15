@@ -1,6 +1,8 @@
 package se.hkr.ood.domain;
 
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,5 +32,13 @@ class MaterialTest {
         material.setRecyclingGuidance(newGuidance);
 
         assertEquals(newGuidance, material.getGuidance());
+    }
+
+    @Test
+    void testGetImpact(){
+        int impactValue = 8;
+        Material material = new Material("Hand", impactValue, new ArrayList<>());
+
+        assertEquals(impactValue, material.getImpact());
     }
 }
