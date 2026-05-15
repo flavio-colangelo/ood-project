@@ -31,4 +31,8 @@ public class Material {
   public List<String> getGuidance() {
     return this.recyclingGuidance;
   }
+
+  public int getImpact() {
+    return this.impactValue;
+  }
 }
