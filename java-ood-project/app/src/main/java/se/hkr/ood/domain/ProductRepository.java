@@ -11,7 +11,7 @@ public class ProductRepository {
     }
 
     static public Product read(String name) {
-        return new Product("product", "category", 1, new ArrayList<>());
+        return null;
     }
 
     static public void delete() {
@@ -23,10 +23,10 @@ public class ProductRepository {
     }
 
     static public List<Product> fetchAll() {
-        return new ArrayList<Product>();
+        return null;
     }
 
     static public Product parse(Object object) {
-        return new Product("product", "category", 1, new ArrayList<>());
+        return null;
     };
 }
