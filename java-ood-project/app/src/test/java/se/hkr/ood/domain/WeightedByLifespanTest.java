@@ -1,4 +1,4 @@
-package se.hkr.ood;
+package se.hkr.ood.domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -13,11 +13,12 @@ import se.hkr.ood.domain.EnviromentalImpactCalculator;
 import se.hkr.ood.domain.Material;
 import se.hkr.ood.domain.Product;
 import se.hkr.ood.domain.SimpleSumStrategy;
+import se.hkr.ood.domain.WeightedByLifespanStrategy;
 
-public class SimpleSumStrategyTest {
+public class WeightedByLifespanTest {
     @Test
     void testCalculate() {
-        EnviromentalImpactCalculator strategy = new SimpleSumStrategy();
+        EnviromentalImpactCalculator strategy = new WeightedByLifespanStrategy();
         List<String> expectedGuidance1 = Arrays.asList("Rinse thoroughly", "Give to Adrian");
         Material material1 = new Material("PET Plastic", 50, expectedGuidance1);
         List<String> expectedGuidance2 = Arrays.asList("Eat thoroughly", "Give to Nelson");
@@ -34,7 +35,8 @@ public class SimpleSumStrategyTest {
         for (Material material : materials) {
             expectedImpact += material.getImpact();
         }
-        
-        assertEquals(strategy.calculate(newProduct), expectedImpact, "The Simple Sum Strategy should return the correct value");
+
+        assertEquals(strategy.calculate(newProduct), expectedImpact / newProduct.getEstimatedLifespan(),
+                "The Simple Sum Strategy should return the correct value");
     }
 }
