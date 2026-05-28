@@ -52,8 +52,8 @@ public class DatabaseManager {
                     + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                     + "productName TEXT NOT NULL,"
                     + "materialName TEXT NOT NULL,"
-                    + "FOREIGN KEY (productName) REFERENCES products(name),"
-                    + "FOREIGN KEY (materialName) REFERENCES materials(name)"
+                    + "FOREIGN KEY (productName) REFERENCES products(name) ON UPDATE CASCADE,"
+                    + "FOREIGN KEY (materialName) REFERENCES materials(name) ON UPDATE CASCADE"
                     + ");");
 
         } catch (SQLException e) {
