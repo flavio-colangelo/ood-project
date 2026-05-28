@@ -140,7 +140,6 @@ public class DatabaseManager {
         return null;
     }
 
-    // params can also be a list I'm pretty sure
     public static <T> List<T> fetchList(String tableName, String filterColumn, Object filterValue, RowMapper<T> mapper) {
         try {
             List<String> columns = getTableColumns(tableName);
@@ -170,5 +169,10 @@ public class DatabaseManager {
             System.err.println("Database Query Error: " + e.getMessage());
             return new ArrayList<>();
         }
+    }
+
+    // all rows, no filter. easier to use
+    public static <T> List<T> fetchList(String tableName, RowMapper<T> mapper) {
+        return fetchList(tableName, null, null, mapper);
     }
 }
