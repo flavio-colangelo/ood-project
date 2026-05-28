@@ -28,11 +28,15 @@ public class Material {
     this.recyclingGuidance = recyclingGuidance;
   }
 
-  public List<String> getGuidance() {
-    return this.recyclingGuidance;
+  public String getName() {
+    return name;
   }
 
   public int getImpact() {
-    return this.impactValue;
+    return impactValue;
+  }
+
+  public List<String> getGuidance() {
+    return recyclingGuidance;
   }
 }

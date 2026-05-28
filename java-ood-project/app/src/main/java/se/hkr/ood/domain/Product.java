@@ -18,10 +18,6 @@ public class Product {
   public Product() {
   }
 
-  public List<Material> getMaterials() {
-    return this.materials;
-  }
-
   public void setName(String name) {
     this.name = name;
   }
@@ -36,5 +32,21 @@ public class Product {
 
   public void setMaterials(List<Material> materials) {
     this.materials = materials;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public String getCategory() {
+    return category;
+  }
+
+  public int getEstimatedLifespan() {
+    return enstimatedLifespan;
+  }
+
+  public List<Material> getMaterials() {
+    return materials;
   }
 }
