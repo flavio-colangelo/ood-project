@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import se.hkr.ood.exceptions.ApplicationRuntimeException;
+import se.hkr.ood.exceptions.ProductNotFoundException;
 import se.hkr.ood.infrastructure.DatabaseManager;
 
 public class ProductRepository {
@@ -56,6 +57,11 @@ public class ProductRepository {
             return new Material(matName, impact, guidanceList);
         }, name));
 
+
+        if (product == null) {
+            throw new ProductNotFoundException("Product '" + name + "' not found.");
+        }
+        
         product.setMaterials(materials);
         
         return product;
