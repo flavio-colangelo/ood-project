@@ -112,15 +112,20 @@ public class DatabaseManager {
     }
 
     // https://java-design-patterns.com/patterns/callback/#programmatic-example-of-callback-pattern-in-java
-    // Row mapper maps every single row of a resultset to an object (<T>). Individual functionality in the repositories!!!!
+    // Row mapper maps every single row of a resultset to an object (<T>).
+    // Individual functionality in the repositories!!!!
     public interface RowMapper<T> {
         T mapRow(java.sql.ResultSet rs) throws SQLException;
     }
 
-    // When a primary key column and value is used the rowmapper defined for whatever object it was written for is called and it creates the right object.
-    // 
-    public static <T> T fetch(String tableName, String pkColumn, String pkValue, RowMapper<T> mapper) {
-        String sql = "SELECT * FROM " + tableName + " WHERE " + pkColumn + " = ?";
+    // When a primary key column and value is used the rowmapper defined for
+    // whatever object it was written for is called and it creates the right object.
+    //
+    public static <T> T fetch(String tableName, String pkColumn, String pkValue, RowMapper<T> mapper)
+            throws SQLException {
+        List<String> columns = getTableColumns(tableName);
+        String columnsString = String.join(", ", columns);
+        String sql = "SELECT " + columnsString + " FROM " + tableName + " WHERE " + pkColumn + " = ?"; // explicit columns!!!
         try (Connection conn = DriverManager.getConnection(URL);
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -136,25 +141,34 @@ public class DatabaseManager {
     }
 
     // params can also be a list I'm pretty sure
-    public static <T> List<T> fetchList(String sql, RowMapper<T> mapper, Object... params) {
-        List<T> results = new ArrayList<>();
-
-        try (Connection conn = DriverManager.getConnection(URL);
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            for (int i = 0; i < params.length; i++) {
-                pstmt.setObject(i + 1, params[i]);
+    public static <T> List<T> fetchList(String tableName, String filterColumn, Object filterValue, RowMapper<T> mapper) {
+        try {
+            List<String> columns = getTableColumns(tableName);
+            String columnsString = String.join(", ", columns);
+            String sql = "SELECT " + columnsString + " FROM " + tableName;
+            
+            if (filterColumn != null) {
+                sql += " WHERE " + filterColumn + " = ?"; // not sure we're gonna need this but just in case!!
             }
+            
+            try (Connection conn = DriverManager.getConnection(URL);
+                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    results.add(mapper.mapRow(rs));
+                if (filterColumn != null) {
+                    pstmt.setObject(1, filterValue);
                 }
+
+                List<T> results = new ArrayList<>();
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    while (rs.next()) {
+                        results.add(mapper.mapRow(rs));
+                    }
+                }
+                return results;
             }
         } catch (SQLException e) {
             System.err.println("Database Query Error: " + e.getMessage());
+            return new ArrayList<>();
         }
-
-        return results;
     }
 }
