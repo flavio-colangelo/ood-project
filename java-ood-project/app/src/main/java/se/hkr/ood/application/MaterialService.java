@@ -34,7 +34,7 @@ public class MaterialService {
         return material;
     }
 
-    public static Material createMaterial(Material material) throws SQLException {
+    public static Material createMaterial(Material material) {
         MaterialRepository.create(material);
         return material;
     }
