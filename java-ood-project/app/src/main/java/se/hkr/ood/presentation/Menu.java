@@ -21,7 +21,7 @@ public class Menu {
     System.out.println("This lists the product!");
   }
 
-  // get the option with the corresponding character (or throw NoSuchElement!!)
+  // get the option with the corresponding character (or throw exception!!)
   private static void runOption(List<MenuOption> options, String choice) {
     MenuOption chosenOption = options.stream()
         .filter(o -> o.getCharacter().equalsIgnoreCase(choice)) // get option with right character
@@ -36,14 +36,14 @@ public class Menu {
   private static List<MenuOption> updateProduct = new ArrayList<>();
   private static List<MenuOption> updateMaterial = new ArrayList<>();
 
-  private static void init(Scanner scanner) throws SQLException{
+  private static void init(Scanner scanner) throws SQLException {
     options.clear();
     otherOptions.clear();
 
     options.add(new MenuOption("a", "Fetch Product", () -> {
       try {
         fetchProductOption(scanner);
-      }  catch (Exception e) {
+      } catch (Exception e) {
         throw new ApplicationRuntimeException(e.getMessage());
       }
     }));
@@ -54,10 +54,18 @@ public class Menu {
       genericOptionsLoop(otherOptions, scanner);
     }));
     otherOptions.add(new MenuOption("a", "Update Product", () -> {
-      updateProduct(scanner);
+      try {
+        updateProduct(scanner);
+      } catch (SQLException e) {
+        throw new ApplicationRuntimeException(e.getMessage());
+      }
     }));
     otherOptions.add(new MenuOption("b", "Update Material", () -> {
-      updateMaterial(scanner);
+      try {
+        updateMaterial(scanner);
+      } catch (SQLException e) {
+        throw new ApplicationRuntimeException(e.getMessage());
+      }
     }));
   }
 
@@ -74,50 +82,43 @@ public class Menu {
       System.out.println("Weighted Lifespan Impact Value: " + impact);
     }));
     updateProduct.add(new MenuOption("a", "Update Name", () -> {
-      productUpdateName(product, scanner);
+      genericUpdate("name", "Insert new Name", product, scanner);
     }));
     updateProduct.add(new MenuOption("b", "Update Category", () -> {
-      productUpdateCategory(product, scanner);
+      genericUpdate("category", "Insert new Category", product, scanner);
     }));
     updateProduct.add(new MenuOption("c", "Update Lifespan", () -> {
-      productUpdateLifespan(product, scanner);
+      genericUpdate("enstimatedLifespan", "Insert new Lifespan", product, scanner, true);
     }));
-    updateProduct.add(new MenuOption("d", "Update Materials", () -> {
-      Product updated = null;
-      try {
-        updated = createProductStep3(product, scanner);
-      } catch (Exception e) {
-        throw new ApplicationRuntimeException("Error while updating materials: " + e.getMessage());
-      }
-      if (updated != null) { // could put database push inside step 3, but I'm worried about coupling
-        ProductService.createProduct(updated);
-        System.out.println("Materials updated and saved!");
-      }
-    }));
+    // updateProduct.add(new MenuOption("d", "Update Materials", () -> {
+    //   Product updated = null;
+    //   try {
+    //     updated = createProductStep3(product, scanner);
+    //   } catch (Exception e) {
+    //     throw new ApplicationRuntimeException("Error while updating materials: " + e.getMessage());
+    //   }
+    //   if (updated != null) { // could put database push inside step 3, but I'm worried about coupling
+    //     ProductService.createProduct(updated);
+    //     System.out.println("Materials updated and saved!");
+    //   }
+    // })); // TODO; SHOULD HANDLE PRODUCT MATERIALS TABLE THING
   }
 
   private static void init(Scanner scanner, Material material) {
+    updateMaterial.clear();
     updateMaterial.add(new MenuOption("a", "Update Name", () -> {
-      try {
-        materialUpdateName(material, scanner);
-      } catch (Exception e) {
-        throw new ApplicationRuntimeException(e.getMessage());
-      }
+      genericUpdate("name", "Insert new Name", material, scanner);
     }));
     updateMaterial.add(new MenuOption("b", "Update Impact Value", () -> {
-      try {
-        materialUpdateImpactValue(material, scanner);
-      } catch (Exception e) {
-        throw new ApplicationRuntimeException(e.getMessage());
-      }
+      genericUpdate("impactValue", "Insert new Impact Value", material, scanner, true);
     }));
-    updateMaterial.add(new MenuOption("c", "Update Recycling Guidance", () -> {
-      try {
-        materialUpdateRecyclingGuidance(material, scanner);
-      } catch (Exception e) {
-        throw new ApplicationRuntimeException(e.getMessage());
-      }
-    }));
+    // updateMaterial.add(new MenuOption("c", "Update Recycling Guidance", () -> {
+    //   try {
+    //     materialUpdateRecyclingGuidance(material, scanner);
+    //   } catch (Exception e) {
+    //     throw new ApplicationRuntimeException(e.getMessage());
+    //   }
+    // })); TODO; UPDATE TO MAKE IT MORE GENERIC
   }
 
   protected static void displayOptions(List<MenuOption> options) {
@@ -150,42 +151,14 @@ public class Menu {
     }
   }
 
-  public static void startLoop() throws SQLException{
+  public static void startLoop() throws SQLException {
     Scanner scanner = new Scanner(System.in);
     init(scanner);
     genericOptionsLoop(options, scanner);
     scanner.close();
   }
 
-  // private static void fetchProductOption(Scanner scanner) {
-  // while (true) {
-  // displayOptions("Insert name.");
-  // String name = scanner.nextLine();
-  // if (name.trim().equalsIgnoreCase("q")) {
-  // return;
-  // }
-  // Product product = ProductService.generateProduct();
-  // try {
-  // product = ProductService.fetchProduct(name);
-  // } catch (ProductNotFoundException e) {
-  // try {
-  // System.out.println("Product doesn't exist.");
-  // ProductService.setName(product, name);
-  // product = createProduct(product, scanner);
-  // } catch (NoActionSelectedException i) {
-  // return;
-  // }
-  // } finally {
-  // if (product != null) {
-  // init(scanner, product);
-  // System.out.println("Calculate impact value?");
-  // genericOptionsLoop(impactValue, scanner);
-  // }
-  // }
-  // }
-  // }
-
-  private static void fetchProductOption(Scanner scanner) throws SQLException{
+  private static void fetchProductOption(Scanner scanner) throws SQLException {
     displayOptions("Insert product name.");
     String name = scanner.nextLine().trim();
     if (name.equalsIgnoreCase("q"))
@@ -222,26 +195,39 @@ public class Menu {
   }
 
   private static Product createProduct(Product product, Scanner scanner) throws SQLException {
-    displayOptions("Create a new product? (Y/N)");
-    String choice = scanner.nextLine().trim().toLowerCase();
-    if (choice.equals("q") || choice.equals("n")) {
-      throw new NoActionSelectedException("Product creation cancelled.");
+    while (true) {
+
+      displayOptions("Create a new product? (Y/N)");
+      String choice = scanner.nextLine().trim().toLowerCase();
+      if (choice.equals("q") || choice.equals("n")) {
+        throw new NoActionSelectedException("Product creation cancelled.");
+      }
+      if (choice.equals("y")) {
+        Product result = createProductStep1(product, scanner);
+        if (result != null) {
+          return result;
+        } else {
+          System.out.println("Invalid option.");
+          // return null; //?
+        }
+      }
     }
-    if (choice.equals("y")) {
-      return createProductStep1(product, scanner);
-    }
-    System.out.println("Invalid option.");
-    return null;
   }
 
   private static Product createProductStep1(Product product, Scanner scanner) throws SQLException {
-    displayOptions("Insert Category");
-    String choice = scanner.nextLine().trim();
-    if (choice.equalsIgnoreCase("q"))
-      return null;
+    while (true) {
 
-    ProductService.setCategory(product, choice);
-    return createProductStep2(product, scanner);
+      displayOptions("Insert Category");
+      String choice = scanner.nextLine().trim();
+      if (choice.equalsIgnoreCase("q")) {
+        return null;
+      }
+      ProductService.setCategory(product, choice);
+      Product result = createProductStep2(product, scanner);
+      if (result != null) {
+        return result;
+      }
+    }
   }
 
   private static Product createProductStep2(Product product, Scanner scanner) throws SQLException {
@@ -262,40 +248,51 @@ public class Menu {
   }
 
   private static Product createProductStep3(Product product, Scanner scanner) throws SQLException {
-    List<String> productMaterials = new ArrayList<>();
-    System.out.println("Insert Materials (Press ENTER to continue)");
-
     while (true) {
-      System.out.print("> ");
-      String choice = scanner.nextLine().trim();
-      if (choice.equalsIgnoreCase("q"))
-        return null;
-      if (choice.isEmpty())
-        break;
-      productMaterials.add(choice);
-    }
+      List<String> productMaterials = new ArrayList<>();
+      System.out.println("Insert Materials (Press ENTER to continue)");
 
-    if (productMaterials.isEmpty()) {
-      System.out.println("At least one Material is required.");
-      return createProductStep3(product, scanner); // retry
-    }
-
-    List<Material> materialList = new ArrayList<>();
-    for (String matName : productMaterials) {
-      try {
-        materialList.add(MaterialService.fetchMaterial(matName));
-      } catch (MaterialNotFoundException e) {
-        System.out.println("\nMaterial '" + matName + "' doesn't exist.");
-        Material newMat = createMaterial(matName, scanner);
-        if (newMat == null)
+      while (true) {
+        System.out.print("> ");
+        String choice = scanner.nextLine().trim();
+        if (choice.equalsIgnoreCase("q"))
           return null;
-        MaterialService.createMaterial(newMat);
-        materialList.add(newMat);
+        if (choice.isEmpty())
+          break;
+        productMaterials.add(choice);
       }
-    }
 
-    ProductService.setMaterials(product, materialList);
-    return product;
+      if (productMaterials.isEmpty()) {
+        System.out.println("At least one Material is required.");
+        // return createProductStep3(product, scanner); // retry
+        continue; // cause of while (true) it asks again anyways
+      }
+
+      List<Material> materialList = new ArrayList<>();
+      boolean quit = false;
+      for (String matName : productMaterials) {
+        try {
+          materialList.add(MaterialService.fetchMaterial(matName));
+        } catch (MaterialNotFoundException e) {
+          System.out.println("\nMaterial '" + matName + "' doesn't exist.");
+          try {
+
+            Material newMat = createMaterial(matName, scanner);
+            if (newMat == null) {
+              quit = true;
+              break;
+            }
+            MaterialService.createMaterial(newMat);
+            materialList.add(newMat);
+          } catch (Exception x) {
+            // TODO: This was generated automatically but to be fair I don't think this matters rn
+          }
+        }
+      }
+
+      ProductService.setMaterials(product, materialList);
+      return product;
+    }
   }
 
   private static Material createMaterial(String name, Scanner scanner) {
@@ -353,7 +350,7 @@ public class Menu {
     return material;
   }
 
-  private static void updateProduct(Scanner scanner) {
+  private static void updateProduct(Scanner scanner) throws SQLException {
     displayOptions("Insert Product name to update.");
     String name = scanner.nextLine().trim();
     if (name.equalsIgnoreCase("q"))
@@ -368,7 +365,7 @@ public class Menu {
     }
   }
 
-  private static void updateMaterial(Scanner scanner) {
+  private static void updateMaterial(Scanner scanner) throws SQLException {
     displayOptions("Insert Material name to update.");
     String name = scanner.nextLine().trim();
     if (name.equalsIgnoreCase("q"))
@@ -383,88 +380,39 @@ public class Menu {
     }
   }
 
-  private static void productUpdateName(Product product, Scanner scanner) {
-    displayOptions("Insert new Name");
-    String choice = scanner.nextLine().trim();
-    if (choice.equalsIgnoreCase("q"))
-      return;
-    ProductService.setName(product, choice);
-    ProductService.createProduct(product); // Save to DB
-    System.out.println("Name updated and saved to DB!");
-  }
-
-  private static void productUpdateCategory(Product product, Scanner scanner) {
-    displayOptions("Insert new Category");
-    String choice = scanner.nextLine().trim();
-    if (choice.equalsIgnoreCase("q"))
-      return;
-    ProductService.setCategory(product, choice);
-    ProductService.createProduct(product); // Save to DB
-    System.out.println("Category updated and saved to DB!");
-  }
-
-  private static void productUpdateLifespan(Product product, Scanner scanner) {
+  private static void genericUpdate(String attribute, String promptText, Object target, Scanner scanner,
+      boolean requiresNumber) {
     while (true) {
-      displayOptions("Insert new Lifespan");
+      displayOptions(promptText);
       String choice = scanner.nextLine().trim();
       if (choice.equalsIgnoreCase("q"))
         return;
+
+      if (requiresNumber) {
+        try {
+          Integer.parseInt(choice);
+        } catch (NumberFormatException e) {
+          System.out.println("Invalid input. Must be a number.");
+          continue;
+        }
+      }
+
       try {
-        ProductService.setlifespan(product, Integer.parseInt(choice));
-        ProductService.createProduct(product); // Save to DB
-        System.out.println("Lifespan updated and saved to DB!");
+        if (target instanceof Product) {
+          ProductService.update(attribute, choice, (Product) target);
+        } else if (target instanceof Material) {
+          MaterialService.update(attribute, choice, (Material) target);
+        }
+        System.out.println("Update saved to DB!");
         return;
-      } catch (NumberFormatException e) {
-        System.out.println("Invalid Lifespan");
+      } catch (Exception e) {
+        System.out.println("Update failed: " + e.getMessage());
+        return;
       }
     }
   }
 
-  private static void materialUpdateName(Material material, Scanner scanner) throws SQLException {
-    displayOptions("Insert new Name");
-    String choice = scanner.nextLine().trim();
-    if (choice.equalsIgnoreCase("q"))
-      return;
-    MaterialService.setName(material, choice);
-    MaterialService.createMaterial(material);
-    System.out.println("Name updated and saved to DB!");
-  }
-
-  private static void materialUpdateImpactValue(Material material, Scanner scanner) throws SQLException {
-    while (true) {
-      displayOptions("Insert new Impact Value");
-      String choice = scanner.nextLine().trim();
-      if (choice.equalsIgnoreCase("q"))
-        return;
-      try {
-        MaterialService.setImpactValue(material, Integer.parseInt(choice));
-        MaterialService.createMaterial(material);
-        System.out.println("Impact Value updated and saved to DB!");
-        return;
-      } catch (NumberFormatException e) {
-        System.out.println("Invalid Impact Value");
-      }
-    }
-  }
-
-  private static void materialUpdateRecyclingGuidance(Material material, Scanner scanner) throws SQLException {
-    List<String> guidance = new ArrayList<>();
-    displayOptions("Insert new Recycling Guidance (ENTER to continue)");
-    while (true) {
-      System.out.print(">");
-      String choice = scanner.nextLine().trim();
-      if (choice.equalsIgnoreCase("q"))
-        return;
-      if (choice.isEmpty())
-        break;
-      guidance.add(choice);
-    }
-    if (!guidance.isEmpty()) {
-      MaterialService.setRecyclingGuidance(material, guidance);
-      MaterialService.createMaterial(material);
-      System.out.println("Guidance updated and saved to DB!");
-    } else {
-      System.out.println("Update failed: At least one guidance step required.");
-    }
+  private static void genericUpdate(String attribute, String promptText, Object target, Scanner scanner) {
+    genericUpdate(attribute, promptText, target, scanner, false); // parsing a number is rarer
   }
 }
