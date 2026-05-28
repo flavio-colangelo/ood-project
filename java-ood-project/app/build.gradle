@@ -21,6 +21,9 @@ dependencies {
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+    // Source: https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
+    implementation("org.xerial:sqlite-jdbc:3.53.1.0")
+
     // This dependency is used by the application.
     implementation libs.guava
 }
