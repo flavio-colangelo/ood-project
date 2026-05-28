@@ -29,15 +29,7 @@ public class Material {
   }
 
   public String getName() {
-<<<<<<< HEAD
     return name;
-=======
-    return this.name;
-  }
-
-  public List<String> getGuidance() {
-    return this.recyclingGuidance;
->>>>>>> feature/database
   }
 
   public int getImpact() {
@@ -46,5 +38,10 @@ public class Material {
 
   public List<String> getGuidance() {
     return recyclingGuidance;
+  }
+
+  public String toString() { // TODO
+    String words = name + Integer.toString(impactValue) + recyclingGuidance;
+    return words;
   }
 }
