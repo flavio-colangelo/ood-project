@@ -3,19 +3,18 @@ package se.hkr.ood.presentation;
 import se.hkr.ood.application.MaterialService;
 import se.hkr.ood.application.ProductService;
 import se.hkr.ood.domain.Product;
+import se.hkr.ood.domain.SimpleSumStrategy;
+import se.hkr.ood.domain.WeightedByLifespanStrategy;
 import se.hkr.ood.domain.Material;
 import se.hkr.ood.exceptions.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.InputMismatchException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Menu {
   private static void listProductOption() {
-    System.out.println("This lists the product!");
+    System.out.println("This lists the product!"); // TODO
   }
 
   // get the option with the corresponding character (or throw NoSuchElement!!)
@@ -49,36 +48,44 @@ public class Menu {
   }
 
   private static void init(Scanner scanner, Product product) {
-    impactValue.add(new MenuOption("a", "Simple Sum Strategy", () -> {
-      // TODO
+    List<MenuOption> tempImpactValue = new ArrayList<>();
+    List<MenuOption> tempUpdateProduct = new ArrayList<>();
+    tempImpactValue.add(new MenuOption("a", "Simple Sum Strategy", () -> {
+      double impact = ProductService.enviromentalImpact(product, new SimpleSumStrategy());
+      System.out.println("Simple Sum Impact Value: " + impact);
     }));
-    impactValue.add(new MenuOption("b", "Weighted by Lifespan Strategy", () -> {
-      // TODO
+    tempImpactValue.add(new MenuOption("b", "Weighted by Lifespan Strategy", () -> {
+      double impact = ProductService.enviromentalImpact(product, new WeightedByLifespanStrategy());
+      System.out.println("Simple Sum Impact Value: " + impact);
     }));
-    updateProduct.add(new MenuOption("a", "Update Name", () -> {
+    tempUpdateProduct.add(new MenuOption("a", "Update Name", () -> {
       productUpdateName(product, scanner);
     }));
-    updateProduct.add(new MenuOption("b", "Update Category", () -> {
+    tempUpdateProduct.add(new MenuOption("b", "Update Category", () -> {
       productUpdateCategory(product, scanner);
     }));
-    updateProduct.add(new MenuOption("c", "Update Lifespan", () -> {
+    tempUpdateProduct.add(new MenuOption("c", "Update Lifespan", () -> {
       productUpdateLifespan(product, scanner);
     }));
-    updateProduct.add(new MenuOption("d", "Update Materials", () -> {
+    tempUpdateProduct.add(new MenuOption("d", "Update Materials", () -> {
       createProductStep3(product, scanner);
     }));
+    impactValue = tempImpactValue;
+    updateProduct = tempUpdateProduct;
   }
 
   private static void init(Scanner scanner, Material material) {
-    updateMaterial.add(new MenuOption("a", "Update Name", () -> {
+    List<MenuOption> tempUpdateMaterial = new ArrayList<>();
+    tempUpdateMaterial.add(new MenuOption("a", "Update Name", () -> {
       materialUpdateName(material, scanner);
     }));
-    updateMaterial.add(new MenuOption("b", "Update Impact Value", () -> {
+    tempUpdateMaterial.add(new MenuOption("b", "Update Impact Value", () -> {
       materialUpdateImpactValue(material, scanner);
     }));
-    updateMaterial.add(new MenuOption("c", "Update Recycling Guidance", () -> {
+    tempUpdateMaterial.add(new MenuOption("c", "Update Recycling Guidance", () -> {
       materialUpdateRecyclingGuidance(material, scanner);
     }));
+    updateMaterial = tempUpdateMaterial;
   }
 
   protected static void displayOptions(List<MenuOption> options) {
@@ -136,12 +143,14 @@ public class Menu {
         } catch (NoActionSelectedException i) {
           return;
         }
-      } finally {
-        if (product != null) {
-          init(scanner, product);
-          System.out.println("Calculate impact value?");
-          genericOptionsLoop(impactValue, scanner);
-        }
+      }
+      if (product != null) {
+        init(scanner, product);
+        System.out.println(product);
+        ProductService.createProduct(product);
+        System.out.println("Calculate impact value?");
+        genericOptionsLoop(impactValue, scanner);
+        return;
       }
     }
   }
@@ -157,6 +166,7 @@ public class Menu {
       switch (choice.trim().toLowerCase()) {
         case "y":
           sendAlong = createProductStep1(sendAlong, scanner);
+          break;
         case "n":
           throw new NoActionSelectedException("No action taken");
         default:
@@ -188,7 +198,7 @@ public class Menu {
   private static Product createProductStep2(Product product, Scanner scanner) {
     while (true) {
       Product sendAlong = product;
-      displayOptions("Insert Category");
+      displayOptions("Insert Lifespan");
       String choice = scanner.nextLine();
       if (choice.trim().equalsIgnoreCase("q")) {
         return null;
@@ -227,7 +237,7 @@ public class Menu {
           try {
             materialList.add(MaterialService.fetchMaterial(productMaterials.get(i)));
           } catch (MaterialNotFoundException e) {
-            System.out.println(materialList.get(i) + " doesn't exist.");
+            System.out.println(productMaterials.get(i) + " doesn't exist.");
             materialList.add(createMaterial(productMaterials.get(i), scanner));
             if (materialList.get(i) == null) {
               break;
@@ -256,6 +266,7 @@ public class Menu {
       switch (choice.trim().toLowerCase()) {
         case "y":
           sendAlong = createMaterialStep1(sendAlong, scanner);
+          break;
         case "n":
           throw new NoActionSelectedException("No action taken");
         default:
@@ -263,6 +274,8 @@ public class Menu {
           break;
       }
       if (sendAlong != null) {
+        MaterialService.createMaterial(sendAlong);
+        System.out.println("e");
         return sendAlong;
       }
     }
@@ -300,7 +313,7 @@ public class Menu {
       }
       while (choice != "") {
         recyclingGuidance.add(choice);
-        System.out.print(">");
+        System.out.print("> ");
         choice = scanner.nextLine();
         if (choice.trim().equalsIgnoreCase("q")) {
           return null;
@@ -347,8 +360,8 @@ public class Menu {
         material = MaterialService.fetchMaterial(name);
         init(scanner, material);
         genericOptionsLoop(updateMaterial, scanner);
-      } catch (ProductNotFoundException e) {
-        System.out.println("Product doesn't exist, try again");
+      } catch (MaterialNotFoundException e) {
+        System.out.println("Material doesn't exist, try again");
       }
     }
   }
