@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import se.hkr.ood.exceptions.ApplicationRuntimeException;
 import se.hkr.ood.exceptions.MaterialNotFoundException;
 import se.hkr.ood.infrastructure.DatabaseManager;
 
@@ -34,7 +35,20 @@ public class MaterialRepository {
     }
 
     static public void update(String attribute, String value, Material material) {
+        try {
+            DatabaseManager.update("materials", "name", material.getName(), attribute, value);
 
+            String fetchName = attribute.equals("name") ? value : material.getName(); // in case the pk got updated
+
+            Material refreshedMaterial = read(fetchName);
+
+            material.setName(refreshedMaterial.getName());
+            material.setImpactValue(refreshedMaterial.getImpact());
+            material.setRecyclingGuidance(refreshedMaterial.getGuidance());
+
+        } catch (SQLException e) {
+             throw new ApplicationRuntimeException("Failed to update Material: " + e.getMessage());
+        }
     }
 
     static public List<Material> fetchAll() {

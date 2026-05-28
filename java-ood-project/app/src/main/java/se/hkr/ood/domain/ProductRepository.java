@@ -84,7 +84,21 @@ public class ProductRepository {
     }
 
     static public void update(String attribute, String value, Product product) {
+        try {
+            DatabaseManager.update("products", "name", product.getName(), attribute, value);
 
+            String fetchName = attribute.equals("name") ? value : product.getName(); // in case the pk got updated
+
+            Product refreshedProduct = read(fetchName);
+
+            product.setName(refreshedProduct.getName());
+            product.setCategory(refreshedProduct.getCategory());
+            product.setLifespan(refreshedProduct.getEstimatedLifespan());
+            product.setMaterials(refreshedProduct.getMaterials());
+
+        } catch (SQLException e) {
+            throw new ApplicationRuntimeException("Failed to update Product: " + e.getMessage());
+        }
     }
 
     static public Product parse(ResultSet rs) throws SQLException {
