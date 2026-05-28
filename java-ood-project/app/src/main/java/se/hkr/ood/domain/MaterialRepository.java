@@ -5,20 +5,25 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import se.hkr.ood.exceptions.ApplicationRuntimeException;
 import se.hkr.ood.exceptions.MaterialNotFoundException;
 import se.hkr.ood.infrastructure.DatabaseManager;
 
 public class MaterialRepository {
 
-    static public void create(Material material) throws SQLException {
-        Map<String, Object> dbMap = new LinkedHashMap<>();
-        dbMap.put("name", material.getName());
-        dbMap.put("impactValue", material.getImpact());
+    static public void create(Material material) {
+        try {
+            Map<String, Object> dbMap = new LinkedHashMap<>();
+            dbMap.put("name", material.getName());
+            dbMap.put("impactValue", material.getImpact());
 
-        String guidance = material.getGuidance() != null ? String.join(",", material.getGuidance()) : "";
-        dbMap.put("recyclingGuidance", guidance);
+            String guidance = material.getGuidance() != null ? String.join(",", material.getGuidance()) : "";
+            dbMap.put("recyclingGuidance", guidance);
 
-        DatabaseManager.push("materials", dbMap);
+            DatabaseManager.push("materials", dbMap);
+        } catch (SQLException e) {
+            throw new ApplicationRuntimeException("Failed to save Product: " + e.getMessage());
+        }
     }
 
     static public Material read(String name) {
@@ -30,7 +35,9 @@ public class MaterialRepository {
         });
 
         if (material == null) {
-            throw new MaterialNotFoundException("Material '" + name + "' not found."); // idk why this is complaining I feel like it would not work without this
+            throw new MaterialNotFoundException("Material '" + name + "' not found."); // idk why this is complaining I
+                                                                                       // feel like it would not work
+                                                                                       // without this
         }
 
         return material;
