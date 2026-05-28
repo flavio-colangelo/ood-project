@@ -77,7 +77,7 @@ public class DatabaseManager {
                 placeholders.append(", ");
             }
         }
-        return "INSERT INTO " + tableName + " (" + cols + ") VALUES (" + placeholders + ")";
+        return "INSERT OR REPLACE INTO " + tableName + " (" + cols + ") VALUES (" + placeholders + ")";
     }
 
     public static List<String> getTableColumns(String tableName) throws SQLException {
