@@ -55,7 +55,7 @@ public class ProductService {
         return strategy.calculate(product);
     }
 
-    public static List<String> recyclingGuidance(Product product) {
+    public static List<List<String>> recyclingGuidance(Product product) {
         return RecyclingGuidanceService.fetchGuidance(product);
     }
 }
