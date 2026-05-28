@@ -29,7 +29,15 @@ public class Material {
   }
 
   public String getName() {
+<<<<<<< HEAD
     return name;
+=======
+    return this.name;
+  }
+
+  public List<String> getGuidance() {
+    return this.recyclingGuidance;
+>>>>>>> feature/database
   }
 
   public int getImpact() {

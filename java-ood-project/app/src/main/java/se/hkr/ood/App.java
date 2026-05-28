@@ -3,10 +3,18 @@
  */
 package se.hkr.ood;
 
+import se.hkr.ood.infrastructure.DatabaseManager;
 import se.hkr.ood.presentation.Menu;
 
 public class App {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        try {
+            DatabaseManager.init();
+        } catch (Exception e) {
+            System.err.println("Failed to initialize database: " + e.getMessage());
+            return;
+        }
+        
         Menu.startLoop();
     }
 }
