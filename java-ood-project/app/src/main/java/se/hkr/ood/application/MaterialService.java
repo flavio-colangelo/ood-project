@@ -39,7 +39,11 @@ public class MaterialService {
         return material;
     }
 
-    public static Material fetchMaterial(String name) {
+    public static Material fetchMaterial(String name) throws SQLException {
         return MaterialRepository.read(name);
+    }
+
+    public static void update(String attribute, String value, Material material) {
+        MaterialRepository.update(attribute, value, material);
     }
 }
