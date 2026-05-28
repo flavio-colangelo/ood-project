@@ -1,5 +1,6 @@
 package se.hkr.ood.domain;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -21,16 +22,12 @@ public class MaterialRepository {
         DatabaseManager.push("materials", dbMap);
     }
 
-    static public Material read(String name) {
-        Material material = DatabaseManager.fetch("materials", "name", name, rs -> {
-            String matName = rs.getString("name");
-            int impact = rs.getInt("impactValue");
-            List<String> guidanceList = java.util.Arrays.asList(rs.getString("recyclingGuidance").split(","));
-            return new Material(matName, impact, guidanceList);
-        });
+    static public Material read(String name) throws SQLException {
+        Material material = DatabaseManager.fetch("materials", "name", name, rs -> MaterialRepository.parse(rs));
 
         if (material == null) {
-            throw new MaterialNotFoundException("Material '" + name + "' not found."); // idk why this is complaining I feel like it would not work without this
+            System.out.println("This is null [test btw]");
+            throw new MaterialNotFoundException("Material '" + name + "' not found.");
         }
 
         return material;
@@ -41,12 +38,15 @@ public class MaterialRepository {
     }
 
     static public List<Material> fetchAll() {
-        return null;
+        return DatabaseManager.fetchList("materials", rs -> MaterialRepository.parse(rs));
     }
 
-    static public Material parse(Object object) {
-        return null;
-    };
+    static public Material parse(ResultSet rs) throws SQLException {
+        String matName = rs.getString("name");
+        int impact = rs.getInt("impactValue");
+        List<String> guidanceList = java.util.Arrays.asList(rs.getString("recyclingGuidance").split(","));
+        return new Material(matName, impact, guidanceList);
+    }
 
     static public void delete() {
 
