@@ -28,6 +28,10 @@ public class Material {
     this.recyclingGuidance = recyclingGuidance;
   }
 
+  public String getName() {
+    return this.name;
+  }
+
   public List<String> getGuidance() {
     return this.recyclingGuidance;
   }
