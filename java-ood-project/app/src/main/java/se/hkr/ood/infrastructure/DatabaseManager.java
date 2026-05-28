@@ -175,4 +175,22 @@ public class DatabaseManager {
     public static <T> List<T> fetchList(String tableName, RowMapper<T> mapper) {
         return fetchList(tableName, null, null, mapper);
     }
+
+    public static void update(String tableName, String pkColumn, Object pkValue, String attribute, Object newValue) throws SQLException {
+        List<String> columns = getTableColumns(tableName);
+        if (!columns.contains(attribute)) {
+            throw new SQLException("Column '" + attribute + "' does not exist in table '" + tableName); // just to make sure, should never trigger though
+        }
+
+        String sql = "UPDATE " + tableName + " SET " + attribute + " = ? WHERE " + pkColumn + " = ?";
+
+        try (Connection conn = DriverManager.getConnection(URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setObject(1, newValue);
+            pstmt.setObject(2, pkValue);
+            
+            pstmt.executeUpdate();
+        }
+    }
 }
