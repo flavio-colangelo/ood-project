@@ -6,13 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import se.hkr.ood.domain.Material;
-import se.hkr.ood.domain.Product;
 
 public class DatabaseManager {
     private final static String FOREIGN_STMT = "PRAGMA foreign_keys = ON;";
@@ -34,7 +30,7 @@ public class DatabaseManager {
 
     private static void createTable(Connection conn) throws SQLException {
         try (java.sql.Statement stmt = conn.createStatement()) {
-            stmt.execute("PRAGMA foreign_keys = ON;");
+            stmt.execute(FOREIGN_STMT);
 
             stmt.execute("CREATE TABLE IF NOT EXISTS materials ("
                     + "name TEXT PRIMARY KEY NOT NULL,"
@@ -121,6 +117,7 @@ public class DatabaseManager {
     // When a primary key column and value is used the rowmapper defined for
     // whatever object it was written for is called and it creates the right object.
     //
+    @SuppressWarnings("null")
     public static <T> T fetch(String tableName, String pkColumn, String pkValue, RowMapper<T> mapper)
             throws SQLException {
         List<String> columns = getTableColumns(tableName);
