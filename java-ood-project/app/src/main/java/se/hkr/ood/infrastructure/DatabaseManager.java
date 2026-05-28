@@ -18,13 +18,14 @@ public class DatabaseManager {
     private final static String FOREIGN_STMT = "PRAGMA foreign_keys = ON;";
     private final static String URL = "jdbc:sqlite:ood.db";
 
-    public static void init(String[] args) throws SQLException {
+    public static void init() throws SQLException {
 
         try (Connection conn = DriverManager.getConnection(URL)) {
             if (conn != null) {
                 // System.out.println("Conected to database ood.db\n");
 
                 createTable(conn);
+                System.out.println("This has run!");
             }
         } catch (SQLException e) {
             throw new SQLException(e);
@@ -32,36 +33,31 @@ public class DatabaseManager {
     }
 
     private static void createTable(Connection conn) throws SQLException {
-        String sql = ""
-                + FOREIGN_STMT
-                + ""
-                + "CREATE TABLE IF NOT EXISTS materials ("
-                + "name TEXT PRIMARY KEY NOT NULL,"
-                + "impactValue INTEGER NOT NULL,"
-                + "recyclingGuidance TEXT NOT NULL" // text separated by a comma gets parsed as list of strings cause
-                                                    // it's easier to deal with eventually!!!
-                + ");"
-                + ""
-                + ""
-                + "CREATE TABLE IF NOT EXISTS products ("
-                + "name TEXT PRIMARY KEY NOT NULL,"
-                + "category TEXT NOT NULL,"
-                + "enstimatedLifespan INTEGER NOT NULL,"
-                + ");"
-                + ""
-                + ""
-                + "CREATE TABLE IF NOT EXISTS product_materials ("
-                + "id INTEGER AUTOINCREMENT PRIMARY KEY NOT NULL,"
-                + "productName TEXT NOT NULL,"
-                + "materialName TEXT NOT NULL,"
-                + "FOREIGN KEY (productName) REFERENCES products(name),"
-                + "FOREIGN KEY (materialName) REFERENCES materials(name)"
-                + ");";
+        try (java.sql.Statement stmt = conn.createStatement()) {
+            stmt.execute("PRAGMA foreign_keys = ON;");
 
-        try (Statement stmt = conn.createStatement()) {
-            stmt.execute(sql);
+            stmt.execute("CREATE TABLE IF NOT EXISTS materials ("
+                    + "name TEXT PRIMARY KEY NOT NULL,"
+                    + "impactValue INTEGER NOT NULL,"
+                    + "recyclingGuidance TEXT NOT NULL"
+                    + ");");
+
+            stmt.execute("CREATE TABLE IF NOT EXISTS products ("
+                    + "name TEXT PRIMARY KEY NOT NULL,"
+                    + "category TEXT NOT NULL,"
+                    + "enstimatedLifespan INTEGER NOT NULL"
+                    + ");");
+
+            stmt.execute("CREATE TABLE IF NOT EXISTS product_materials ("
+                    + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + "productName TEXT NOT NULL,"
+                    + "materialName TEXT NOT NULL,"
+                    + "FOREIGN KEY (productName) REFERENCES products(name),"
+                    + "FOREIGN KEY (materialName) REFERENCES materials(name)"
+                    + ");");
+
         } catch (SQLException e) {
-            throw new SQLException(e);
+            throw new SQLException("Failed to create tables: " + e.getMessage(), e);
         }
     }
 
@@ -116,18 +112,22 @@ public class DatabaseManager {
     }
 
     // https://java-design-patterns.com/patterns/callback/#programmatic-example-of-callback-pattern-in-java
+    // Row mapper maps every single row of a resultset to an object (<T>). Individual functionality in the repositories!!!!
     public interface RowMapper<T> {
         T mapRow(java.sql.ResultSet rs) throws SQLException;
     }
 
+    // When a primary key column and value is used the rowmapper defined for whatever object it was written for is called and it creates the right object.
+    // 
     public static <T> T fetch(String tableName, String pkColumn, String pkValue, RowMapper<T> mapper) {
         String sql = "SELECT * FROM " + tableName + " WHERE " + pkColumn + " = ?";
         try (Connection conn = DriverManager.getConnection(URL);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-             
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setObject(1, pkValue);
             try (java.sql.ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) return mapper.mapRow(rs);
+                if (rs.next())
+                    return mapper.mapRow(rs);
             }
         } catch (SQLException e) {
             System.err.println("Database Query Error: " + e.getMessage());
@@ -135,16 +135,17 @@ public class DatabaseManager {
         return null;
     }
 
+    // params can also be a list I'm pretty sure
     public static <T> List<T> fetchList(String sql, RowMapper<T> mapper, Object... params) {
         List<T> results = new ArrayList<>();
-        
+
         try (Connection conn = DriverManager.getConnection(URL);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-             
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             for (int i = 0; i < params.length; i++) {
                 pstmt.setObject(i + 1, params[i]);
             }
-            
+
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     results.add(mapper.mapRow(rs));
@@ -153,7 +154,7 @@ public class DatabaseManager {
         } catch (SQLException e) {
             System.err.println("Database Query Error: " + e.getMessage());
         }
-        
+
         return results;
     }
 }
