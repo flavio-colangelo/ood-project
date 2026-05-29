@@ -43,6 +43,10 @@ public class MaterialService {
         return MaterialRepository.read(name);
     }
 
+    public static List<Material> fetchAll() {
+        return MaterialRepository.fetchAll();
+    }
+
     public static void update(String attribute, String value, Material material) {
         MaterialRepository.update(attribute, value, material);
     }

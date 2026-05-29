@@ -50,4 +50,13 @@ public class Product {
     this.materials = materials;
   }
 
+  @Override
+  public String toString() {
+    String materialString = "";
+    for (Material material : materials) {
+      materialString += " - " + material.toString() + "\n";
+    }
+    return String.format("%s (%s): -%dy\n%s", this.name, this.category, this.enstimatedLifespan, materialString);
+  }
+
 }

@@ -39,4 +39,13 @@ public class Material {
   public int getImpact() {
     return this.impactValue;
   }
+
+  @Override
+  public String toString() {
+    String guidanceString = "";
+    for (String guidance : recyclingGuidance) {
+      guidanceString += " * " + guidance + "\n";
+    }
+    return String.format("%s: impact - %d\n%s", this.name, this.impactValue, guidanceString);
+  }
 }

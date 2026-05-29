@@ -122,7 +122,8 @@ public class DatabaseManager {
             throws SQLException {
         List<String> columns = getTableColumns(tableName);
         String columnsString = String.join(", ", columns);
-        String sql = "SELECT " + columnsString + " FROM " + tableName + " WHERE " + pkColumn + " = ?"; // explicit columns!!!
+        String sql = "SELECT " + columnsString + " FROM " + tableName + " WHERE " + pkColumn + " = ?"; // explicit
+                                                                                                       // columns!!!
         try (Connection conn = DriverManager.getConnection(URL);
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -137,18 +138,19 @@ public class DatabaseManager {
         return null;
     }
 
-    public static <T> List<T> fetchList(String tableName, String filterColumn, Object filterValue, RowMapper<T> mapper) {
+    public static <T> List<T> fetchList(String tableName, String filterColumn, Object filterValue,
+            RowMapper<T> mapper) {
         try {
             List<String> columns = getTableColumns(tableName);
             String columnsString = String.join(", ", columns);
             String sql = "SELECT " + columnsString + " FROM " + tableName;
-            
+
             if (filterColumn != null) {
                 sql += " WHERE " + filterColumn + " = ?"; // not sure we're gonna need this but just in case!!
             }
-            
+
             try (Connection conn = DriverManager.getConnection(URL);
-                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                    PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
                 if (filterColumn != null) {
                     pstmt.setObject(1, filterValue);
@@ -173,20 +175,39 @@ public class DatabaseManager {
         return fetchList(tableName, null, null, mapper);
     }
 
-    public static void update(String tableName, String pkColumn, Object pkValue, String attribute, Object newValue) throws SQLException {
+    public static void update(String tableName, String pkColumn, Object pkValue, String attribute, Object newValue)
+            throws SQLException {
         List<String> columns = getTableColumns(tableName);
         if (!columns.contains(attribute)) {
-            throw new SQLException("Column '" + attribute + "' does not exist in table '" + tableName); // just to make sure, should never trigger though
+            throw new SQLException("Column '" + attribute + "' does not exist in table '" + tableName); // just to make
+                                                                                                        // sure, should
+                                                                                                        // never trigger
+                                                                                                        // though
         }
 
         String sql = "UPDATE " + tableName + " SET " + attribute + " = ? WHERE " + pkColumn + " = ?";
 
         try (Connection conn = DriverManager.getConnection(URL);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setObject(1, newValue);
             pstmt.setObject(2, pkValue);
+
+            pstmt.executeUpdate();
+        }
+    }
+
+    public static void delete(String tableName, String filterColumn, Object filterValue) throws SQLException {
+        List<String> columns = getTableColumns(tableName);
+        if (!columns.contains(filterColumn)) {
+            throw new SQLException("Delete failed: Column '" + filterColumn + "' does not exist in table '" + tableName + "'."); // just in case :P
+        }
+
+        String sql = "DELETE FROM " + tableName + " WHERE " + filterColumn + " = ?";
+        try (Connection conn = DriverManager.getConnection(URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
+            pstmt.setObject(1, filterValue);
             pstmt.executeUpdate();
         }
     }

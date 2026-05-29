@@ -14,9 +14,6 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Menu {
-  private static void listProductOption() {
-    System.out.println("This lists the product!");
-  }
 
   // get the option with the corresponding character (or throw exception!!)
   private static void runOption(List<MenuOption> options, String choice) {
@@ -44,10 +41,13 @@ public class Menu {
         throw new ApplicationRuntimeException(e.getMessage());
       }
     }));
-    options.add(new MenuOption("b", "List Product", () -> {
+    options.add(new MenuOption("b", "List Products", () -> {
       listProductOption();
     }));
-    options.add(new MenuOption("c", "Other", () -> {
+    options.add(new MenuOption("c", "List Materials", () -> {
+      listMaterialOption();
+    }));
+    options.add(new MenuOption("d", "Other", () -> {
       genericOptionsLoop(otherOptions, scanner);
     }));
     otherOptions.add(new MenuOption("a", "Update Product", () -> {
@@ -87,18 +87,18 @@ public class Menu {
     updateProduct.add(new MenuOption("c", "Update Lifespan", () -> {
       genericUpdate("enstimatedLifespan", "Insert new Lifespan", product, scanner, true);
     }));
-    // updateProduct.add(new MenuOption("d", "Update Materials", () -> {
-    //   Product updated = null;
-    //   try {
-    //     updated = createProductStep3(product, scanner);
-    //   } catch (Exception e) {
-    //     throw new ApplicationRuntimeException("Error while updating materials: " + e.getMessage());
-    //   }
-    //   if (updated != null) { // could put database push inside step 3, but I'm worried about coupling
-    //     ProductService.createProduct(updated);
-    //     System.out.println("Materials updated and saved!");
-    //   }
-    // })); // TODO; SHOULD HANDLE PRODUCT MATERIALS TABLE THING
+    updateProduct.add(new MenuOption("d", "Update Materials", () -> {
+      Product updated = null;
+      try {
+        updated = createProductStep3(product, scanner);
+      } catch (Exception e) {
+        throw new ApplicationRuntimeException("Error while updating materials: " + e.getMessage());
+      }
+      if (updated != null) {
+        ProductService.updateMaterials(updated);
+        System.out.println("Materials updated and saved!");
+      }
+    }));
   }
 
   private static void init(Scanner scanner, Material material) {
@@ -109,13 +109,10 @@ public class Menu {
     updateMaterial.add(new MenuOption("b", "Update Impact Value", () -> {
       genericUpdate("impactValue", "Insert new Impact Value", material, scanner, true);
     }));
-    // updateMaterial.add(new MenuOption("c", "Update Recycling Guidance", () -> {
-    //   try {
-    //     materialUpdateRecyclingGuidance(material, scanner);
-    //   } catch (Exception e) {
-    //     throw new ApplicationRuntimeException(e.getMessage());
-    //   }
-    // })); TODO; UPDATE TO MAKE IT MORE GENERIC
+    updateMaterial.add(new MenuOption("c", "Update Recycling Guidance", () -> {
+      materialUpdateRecyclingGuidance(material, scanner); // it's different enough that I think it's fine to have a
+                                                          // separate function
+    }));
   }
 
   protected static void displayOptions(List<MenuOption> options) {
@@ -164,8 +161,9 @@ public class Menu {
     Product product;
     try {
       product = ProductService.fetchProduct(name);
-      System.out.println("Name: " + product.getName() + " :: Category: " + product.getCategory()); // product.toString()
-                                                                                                   // should do this
+      // System.out.println("Name: " + product.getName() + " :: Category: " +
+      // product.getCategory());
+      System.out.println(product.toString()); // TODO; actually make this!
     } catch (ProductNotFoundException e) {
       System.out.println("\nProduct doesn't exist.");
       try {
@@ -193,7 +191,6 @@ public class Menu {
 
   private static Product createProduct(Product product, Scanner scanner) throws SQLException {
     while (true) {
-
       displayOptions("Create a new product? (Y/N)");
       String choice = scanner.nextLine().trim().toLowerCase();
       if (choice.equals("q") || choice.equals("n")) {
@@ -213,7 +210,6 @@ public class Menu {
 
   private static Product createProductStep1(Product product, Scanner scanner) throws SQLException {
     while (true) {
-
       displayOptions("Insert Category");
       String choice = scanner.nextLine().trim();
       if (choice.equalsIgnoreCase("q")) {
@@ -247,7 +243,7 @@ public class Menu {
   private static Product createProductStep3(Product product, Scanner scanner) throws SQLException {
     while (true) {
       List<String> productMaterials = new ArrayList<>();
-      System.out.println("Insert Materials (Press ENTER to continue)");
+      System.out.println("Insert Materials (Press ENTER on an empty line to finish)");
 
       while (true) {
         System.out.print("> ");
@@ -282,7 +278,8 @@ public class Menu {
             MaterialService.createMaterial(newMat);
             materialList.add(newMat);
           } catch (Exception x) {
-            // TODO: This was generated automatically but to be fair I don't think this matters rn
+            // TODO: This was generated automatically but to be fair I don't think this
+            // matters rn
           }
         }
       }
@@ -377,6 +374,39 @@ public class Menu {
     }
   }
 
+  private static void materialUpdateRecyclingGuidance(Material material, Scanner scanner) {
+    List<String> guidance = new ArrayList<>();
+    System.out.println("Insert new Recycling Guidance steps (Press ENTER on an empty line to finish)");
+    System.out.println("q) back");
+
+    while (true) {
+      System.out.print("> ");
+      String choice = scanner.nextLine().trim();
+
+      if (choice.equalsIgnoreCase("q")) {
+        return;
+      }
+      if (choice.isEmpty()) {
+        break;
+      }
+
+      guidance.add(choice);
+    }
+
+    if (!guidance.isEmpty()) {
+      String guidanceString = String.join(",", guidance);
+
+      try {
+        MaterialService.update("recyclingGuidance", guidanceString, material);
+        System.out.println("Guidance updated and saved to DB!");
+      } catch (Exception e) {
+        System.out.println("Update failed: " + e.getMessage());
+      }
+    } else {
+      System.out.println("Update failed: At least one guidance step is required.");
+    }
+  }
+
   private static void genericUpdate(String attribute, String promptText, Object target, Scanner scanner,
       boolean requiresNumber) {
     while (true) {
@@ -411,5 +441,39 @@ public class Menu {
 
   private static void genericUpdate(String attribute, String promptText, Object target, Scanner scanner) {
     genericUpdate(attribute, promptText, target, scanner, false); // parsing a number is rarer
+  }
+
+  private static void listProductOption() {
+    try {
+      List<Product> products = ProductService.fetchAll();
+
+      if (products.isEmpty()) {
+        System.out.println("\nNo products found in the database.");
+        return;
+      }
+
+      System.out.println("\nProducts:");
+      for (Product p : products) {
+        System.out.println(p.toString());
+      }
+
+    } catch (SQLException e) {
+      System.out.println("Error fetching products: " + e.getMessage());
+    }
+  }
+
+  private static void listMaterialOption() {
+    List<Material> materials = MaterialService.fetchAll();
+
+    if (materials.isEmpty()) {
+      System.out.println("\nNo materials found in the database.");
+      return;
+    }
+
+    System.out.println("\nMaterials:");
+    for (Material m : materials) {
+      System.out.println(m.toString());
+    }
+
   }
 }

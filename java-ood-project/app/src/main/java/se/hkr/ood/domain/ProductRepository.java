@@ -79,10 +79,6 @@ public class ProductRepository {
         return products;
     }
 
-    static public void delete() {
-
-    }
-
     static public void update(String attribute, String value, Product product) {
         try {
             DatabaseManager.update("products", "name", product.getName(), attribute, value);
@@ -106,5 +102,23 @@ public class ProductRepository {
         String category = rs.getString("category");
         int lifespan = rs.getInt("enstimatedLifespan");
         return new Product(pName, category, lifespan, new ArrayList<>());
+    }
+
+    static public void updateMaterials(Product product) { // the product materials table is a responsibility of product since products have the materials
+        try {
+            DatabaseManager.delete("product_materials", "productName", product.getName());
+
+            if (product.getMaterials() != null) {
+                for (Material material : product.getMaterials()) {
+                    Map<String, Object> bimap = new LinkedHashMap<>();
+                    bimap.put("productName", product.getName());
+                    bimap.put("materialName", material.getName());
+
+                    DatabaseManager.push("product_materials", bimap);
+                }
+            }
+        } catch (SQLException e) {
+            throw new ApplicationRuntimeException("Failed to update Product Materials: " + e.getMessage());
+        }
     }
 }
