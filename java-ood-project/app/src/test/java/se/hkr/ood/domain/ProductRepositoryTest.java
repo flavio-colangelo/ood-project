@@ -16,6 +16,10 @@ class ProductRepositoryTest {
     @BeforeAll
     static void init() {
         try {
+            java.io.File dbFile = new java.io.File("ood.db");
+            if (dbFile.exists()) {
+                dbFile.delete();
+            }
             DatabaseManager.init();
         } catch (SQLException e) {
             fail("Failed to initialize the database for tests: " + e.getMessage());
@@ -32,28 +36,54 @@ class ProductRepositoryTest {
 
     @Test
     void testRead() throws SQLException {
-        Product result = ProductRepository.read("AnyName");
 
-        assertNotNull(result, "Read should return a Product object");
-        assertNotNull(result.getMaterials(), "The hardcoded product should have an initialized materials list");
-        assertTrue(result.getMaterials().isEmpty(), "The hardcoded materials list should be empty");
+        Product productToSave = new Product("AnyProduct", "Somethingg", 5, new ArrayList<>());
+        ProductRepository.create(productToSave);
 
+        assertDoesNotThrow(() -> {
+            Product result = ProductRepository.read("AnyProduct");
+
+            assertNotNull(result);
+            assertEquals("AnyProduct", result.getName());
+            assertEquals("Somethingg", result.getCategory());
+            assertEquals(5, result.getEstimatedLifespan());
+
+            assertNotNull(result.getMaterials());
+            assertTrue(result.getMaterials().isEmpty());
+        });
     }
 
-    @Test
+@Test
     void testUpdate() {
-        Product productToUpdate = new Product();
 
-        assertDoesNotThrow(() -> ProductRepository.update("category", "Electronics", productToUpdate),
-                "Update method should execute without errors");
+        Product product = new Product("OldName", "OldCategory", 5, new ArrayList<>());
+        ProductRepository.create(product);
+
+        assertDoesNotThrow(() -> {
+            ProductRepository.update("name", "NewName", product);
+            assertEquals("NewName", product.getName());
+        });
+
+        assertDoesNotThrow(() -> {
+            ProductRepository.update("category", "NewCategory", product);
+            assertEquals("NewCategory", product.getCategory());
+        });
+
+        assertDoesNotThrow(() -> {
+            ProductRepository.update("enstimatedLifespan", "50", product);
+            assertEquals(50, product.getEstimatedLifespan());
+        });
     }
 
     @Test
     void testFetchAll() throws SQLException {
+        Product product = new Product("CoolProductzz", "Category", 5, new ArrayList<>());
+        ProductRepository.create(product);
+
         List<Product> results = ProductRepository.fetchAll();
 
-        assertNotNull(results, "FetchAll should return a list, not null");
-        assertTrue(results.isEmpty(), "Currently, fetchAll returns an empty list");
+        assertNotNull(results);
+        assertFalse(results.isEmpty());
     }
 
     // @Test // parse now parses resultSet, TODO;
