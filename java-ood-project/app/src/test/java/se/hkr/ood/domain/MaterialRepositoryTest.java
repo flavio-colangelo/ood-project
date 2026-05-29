@@ -1,6 +1,9 @@
 package se.hkr.ood.domain;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import se.hkr.ood.infrastructure.DatabaseManager;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -9,6 +12,15 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MaterialRepositoryTest {
+
+    @BeforeAll
+    static void init() {
+        try {
+            DatabaseManager.init();
+        } catch (SQLException e) {
+            fail("Failed to initialize the database for tests: " + e.getMessage());
+        }
+    }
 
     @Test
     void testCreate() {
