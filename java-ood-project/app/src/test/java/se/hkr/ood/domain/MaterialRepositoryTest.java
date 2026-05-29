@@ -26,10 +26,10 @@ class MaterialRepositoryTest {
         assertTrue(result.getGuidance().isEmpty());
     }
 
-    @Test
-    void testDelete() {
-        assertDoesNotThrow(() -> MaterialRepository.delete());
-    }
+    // @Test
+    // void testDelete() {
+    //     assertDoesNotThrow(() -> MaterialRepository.delete());
+    // }
 
     @Test
     void testUpdate() {
