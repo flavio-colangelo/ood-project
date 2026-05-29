@@ -54,7 +54,9 @@ public class Product {
   public String toString() {
     String materialString = "";
     for (Material material : materials) {
-      materialString += " - " + material.toString() + "\n";
+      for (String line : material.toString().split("\n")) {
+        materialString += "  " + line + "\n";
+      }
     }
     return String.format("%s (%s): -%dy\n%s", this.name, this.category, this.enstimatedLifespan, materialString);
   }
