@@ -1,4 +1,4 @@
-package se.hkr.ood;
+package se.hkr.ood.domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -7,11 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-
-import se.hkr.ood.domain.EnviromentalImpactCalculator;
-import se.hkr.ood.domain.Material;
-import se.hkr.ood.domain.Product;
-import se.hkr.ood.domain.SimpleSumStrategy;
 
 public class SimpleSumStrategyTest {
     @Test
@@ -33,7 +28,8 @@ public class SimpleSumStrategyTest {
         for (Material material : materials) {
             expectedImpact += material.getImpact();
         }
-        
-        assertEquals(strategy.calculate(newProduct), expectedImpact, "The Simple Sum Strategy should return the correct value");
+
+        assertEquals(strategy.calculate(newProduct), expectedImpact,
+                "The Simple Sum Strategy should return the correct value");
     }
 }
