@@ -66,6 +66,10 @@ public class ProductService {
 
     public static void update(String attribute, String value, Product product) {
         ProductRepository.update(attribute, value, product);
+        if (attribute == "name") {
+            System.out.println(product.getName());
+            System.out.println(product.getMaterials());
+        }
     }
 
     public static void updateMaterials(Product product) {
