@@ -28,11 +28,24 @@ public class Material {
     this.recyclingGuidance = recyclingGuidance;
   }
 
+  public String getName() {
+    return this.name;
+  }
+
   public List<String> getGuidance() {
     return this.recyclingGuidance;
   }
 
   public int getImpact() {
     return this.impactValue;
+  }
+
+  @Override
+  public String toString() {
+    String guidanceString = "";
+    for (String guidance : recyclingGuidance) {
+      guidanceString += " * " + guidance + "\n";
+    }
+    return String.format("%s: impact - %d\n%s", this.name, this.impactValue, guidanceString);
   }
 }

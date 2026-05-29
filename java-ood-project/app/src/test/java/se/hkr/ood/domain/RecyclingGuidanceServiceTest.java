@@ -2,7 +2,6 @@ package se.hkr.ood.domain;
 
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,9 +15,11 @@ public class RecyclingGuidanceServiceTest {
     List<Material> materials = new ArrayList<>();
     materials.add(material);
     Product product = new Product("productName", "productCategory", 1, materials);
+    List<List<String>> actualGuidance = new ArrayList<>();
+    actualGuidance.add(guidance);
 
-    assertNull(RecyclingGuidanceService.fetchGuidance(product), "Guidance should not be Null");
-    assertEquals(guidance, RecyclingGuidanceService.fetchGuidance(product),
+    assertNotNull(RecyclingGuidanceService.fetchGuidance(product), "Guidance should not be Null");
+    assertEquals(actualGuidance, RecyclingGuidanceService.fetchGuidance(product),
         "Guidance should be the same as the one in the sent product material");
   }
 
@@ -35,10 +36,10 @@ public class RecyclingGuidanceServiceTest {
   void fetchGuidanceWithMultipleMaterials() {
     List<String> guidance1 = new ArrayList<>();
     guidance1.add("This is the recycling guidance for material 1");
-    Material material1 = new Material("materialName", 1, guidance1);
+    Material material1 = new Material("material1Name", 1, guidance1);
     List<String> guidance2 = new ArrayList<>();
-    guidance1.add("This is the recycling guidance for material 2");
-    Material material2 = new Material("materialName", 1, guidance1);
+    guidance2.add("This is the recycling guidance for material 2");
+    Material material2 = new Material("material2Name", 1, guidance2);
     List<Material> materials = new ArrayList<>();
     materials.add(material1);
     materials.add(material2);
@@ -46,7 +47,7 @@ public class RecyclingGuidanceServiceTest {
     List<List<String>> guidanceS = new ArrayList<>();
     guidanceS.add(guidance1);
     guidanceS.add(guidance2);
-    assertNull(RecyclingGuidanceService.fetchGuidance(product), "Guidance should not be Null");
+    assertNotNull(RecyclingGuidanceService.fetchGuidance(product), "Guidance should not be Null");
     assertEquals(guidanceS, RecyclingGuidanceService.fetchGuidance(product),
         "Guidance should be the same as the one in the sent product materials");
   }

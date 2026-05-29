@@ -6,6 +6,7 @@ import se.hkr.ood.domain.ProductRepository;
 import se.hkr.ood.domain.RecyclingGuidanceService;
 import se.hkr.ood.domain.EnviromentalImpactCalculator;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +48,11 @@ public class ProductService {
         return product;
     }
 
-    public static Product fetchProduct(String name) {
+    public static List<Product> fetchAll() throws SQLException {
+        return ProductRepository.fetchAll();
+    }
+
+    public static Product fetchProduct(String name) throws SQLException {
         return ProductRepository.read(name);
     }
 
@@ -55,7 +60,15 @@ public class ProductService {
         return strategy.calculate(product);
     }
 
-    public static List<String> recyclingGuidance(Product product) {
+    public static List<List<String>> recyclingGuidance(Product product) {
         return RecyclingGuidanceService.fetchGuidance(product);
+    }
+
+    public static void update(String attribute, String value, Product product) {
+        ProductRepository.update(attribute, value, product);
+    }
+
+    public static void updateMaterials(Product product) {
+        ProductRepository.updateMaterials(product);
     }
 }
