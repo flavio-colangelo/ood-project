@@ -62,13 +62,11 @@ This makes the calculation logic easier to maintain, easier to extend and allows
 
 ## Callback Pattern
 
-The Callback pattern is used in the Menu and MenuOption classes to allow menu actions to be executed dynamically.
+The Callback pattern is used in the DatabaseManager and Repository classes to allow for object parsing without writing object-specific login in the DatabaseManager. 
 
-Each MenuOption stores a Runnable function that is passed when the menu option is created. When a user selects an option, the stored function is executed through the run() method.
+Without this, the DatabaseManager class would have to have separate functions and logic for fetching and then returning an object, but wih this pattern the DatabaseManager uses a parser provided by the Repositories, which keeps concerns separate.
 
-This makes the menu easier to extend since new options can be added without changing the menu flow logic.
-
-Testing:
+## Testing
 
 The project uses JUnit 5 for unit testing.
 
