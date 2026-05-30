@@ -85,4 +85,4 @@ The UML diagram for the project is available in [ClassDiagram.puml](docs/ClassDi
 # Flow Diagram
 The Flow diagram for the project is available in [FlowDiagram.puml](docs/FlowDiagram.puml).
 
-It describes the flow of the program when creating a Product. AS it shows, there are separate circumstancial flows that are followed when a material already exists and when it doesn't, allowing a smoother user experience.
+It describes the flow of the program when fetching a product. Which includes the product and, perhaps, material creation to ensure the user always ends with a product when fetching for one even when the product doesn't exist within the database, allowing a smoother user experience.
