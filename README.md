@@ -78,6 +78,10 @@ Tests are implemented for:
 
 This tests follow the Arrange, Act, Assert structure.
 
+# Package Structure Diagram
+The package structure diagram for the project is available in [PackageStructure.puml](docs/PackageStructure.puml).
+
+
 # UML Class Diagram
 The UML diagram for the project is available in [ClassDiagram.puml](docs/ClassDiagram.puml).
 
