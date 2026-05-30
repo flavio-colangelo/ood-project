@@ -13,19 +13,25 @@
 
 The goal is to design a menu-driven console program handling product management, material management, calculation of environmental impact and lastly providing recycling guidance.
 
-The members of the group are: Adrián Carrillo Jordán, Flavio Colangelo , Osikoya Omotoyosi Nelson
+The members of the group are: Adrián Carrillo Jordán, Flavio Colangelo, and Osikoya Omotoyosi Nelson
   
-Architectural Decisions:
+## Architectural Decisions
 
-The project follows a layered architecture consisting of Presentation, Application and Domain layers.
+The project follows a layered architecture consisting of Presentation, Application and Domain layers, with an extra Infrastructure layer. This is to make sure that there is even more separation of concerns, each layer having its own responsibility.
 
-In the Presentation layer we have the Menu and MenuOption classes. These classes hold the user interface through which the user interacts with the application. This layer is responsible for user input, menu navigation and displaying information.
+### Presentation Layer
+In the Presentation layer we have the Menu and MenuOption classes. These classes hold the user interface through which the user interacts with the application. This layer is responsible for user input, menu navigation and displaying information. It also allows for the replacement or upgrade of the layers if needed.
 
+### Application Layer
 The Application layer consists of the ProductService and MaterialService classes. These classes coordinate communication between the presentation and domain layers and are responsible for handling application flow.
 
+### Domain Layer
 The Domain layer contains the main business logic and entities such as Product, Material, ProductRepository, MaterialRepository, RecyclingGuidanceService, SimpleSumStrategy, WeightedByLifespanStrategy and the EnvironmentalImpactCalculator interface.
 
-Strategy Pattern:
+### Infrastructure Layer
+The Infrastructure layer holds the DatabaseManager, which is the only class that directly interfaces with the database. The Repository classes in the Domain layer use it to fetch information from the database, which they then parse and process.
+
+## Strategy Pattern
 
 The Strategy Pattern was introduced to allow different ways of calculating environmental impact without changing the Product or ProductService classes.
 
@@ -33,7 +39,7 @@ Currently the project contains two implementations namely SimpleSumStrategy and 
 
 This makes the calculation logic easier to maintain, easier to extend and allows strategies to be switched without changing the rest of the application.
 
-Callback Pattern:
+## Callback Pattern
 
 The Callback pattern is used in the Menu and MenuOption classes to allow menu actions to be executed dynamically.
 
@@ -57,99 +63,7 @@ Tests are implemented for:
 This tests follow the Arrange, Act, Assert structure.
 
 # UML Class Diagram
-```
-@startuml
-
-package presentation {
-  class Menu {
-    + startLoop(): void
-  }
-
-  class MenuOption {
-    - character: String
-    - title: String
-    - function: Runnable
-    + run(): void
-    + getCharacter(): String
-    + toString(): String
-  }
-}
-
-package application {
-  class ProductService
-  class MaterialService
-}
-
-package domain {
-
-  class Product {
-    - name: String
-    - category: String
-    - estimatedLifespan: int
-    - materials: List<Material>
-  }
-
-  class Material {
-    - name: String
-    - impactValue: int
-    - recyclingGuidance: List<String>
-  }
-
-  class ProductRepository
-  class MaterialRepository
-  class DatabaseManager
-  class RecyclingGuidanceService
-
-  interface EnviromentalImpactCalculator {
-    + calculate(product: Product): double
-  }
-
-  class SimpleSumStrategy
-  class WeightedByLifespanStrategy
-}
-
-package exceptions {
-  class ApplicationRuntimeException
-  class InvalidMenuOptionException
-  class NoActionSelectedException
-  class ProductNotFoundException
-  class MaterialNotFoundException
-}
-
-class App
-
-App --> Menu
-
-Menu --> MenuOption
-Menu --> ProductService
-Menu --> MaterialService
-
-ProductService --> ProductRepository
-ProductService --> RecyclingGuidanceService
-ProductService --> EnviromentalImpactCalculator
-
-MaterialService --> MaterialRepository
-
-ProductRepository --> Product
-MaterialRepository --> Material
-ProductRepository --> DatabaseManager
-MaterialRepository --> DatabaseManager
-
-Product "*" o-- "*" Material
-
-RecyclingGuidanceService --> Product
-
-EnviromentalImpactCalculator <|.. SimpleSumStrategy
-EnviromentalImpactCalculator <|.. WeightedByLifespanStrategy
-
-RuntimeException <|-- ApplicationRuntimeException
-RuntimeException <|-- InvalidMenuOptionException
-RuntimeException <|-- NoActionSelectedException
-RuntimeException <|-- ProductNotFoundException
-RuntimeException <|-- MaterialNotFoundException
-
-@enduml
-```
+The UML diagram for the project is available in [ClassDiagram.puml](ClassDiagram.puml).
 # Flow Diagram
 ```
 @startuml
