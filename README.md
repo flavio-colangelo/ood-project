@@ -14,6 +14,14 @@
 The goal is to design a menu-driven console program handling product management, material management, calculation of environmental impact and lastly providing recycling guidance.
 
 The members of the group are: Adrián Carrillo Jordán, Flavio Colangelo, and Osikoya Omotoyosi Nelson
+
+## Building and Running
+1. Clone the repository
+```bash
+git clone https://github.com/flavio-colangelo/ood-project
+cd ood-project
+```
+2. Runthe java project
   
 ## Architectural Decisions
 
@@ -63,57 +71,8 @@ Tests are implemented for:
 This tests follow the Arrange, Act, Assert structure.
 
 # UML Class Diagram
-The UML diagram for the project is available in [ClassDiagram.puml](ClassDiagram.puml).
+The UML diagram for the project is available in [ClassDiagram.puml](docs/ClassDiagram.puml).
 # Flow Diagram
-```
-@startuml
-start
+The Flow diagram for the project is available in [FlowDiagram.puml](docs/FlowDiagram.puml).
 
-:Start application;
-:Open main menu;
-:Display menu options;
-
-while (User has not selected q?) is (continue)
-  :Read user input;
-
-  if (Valid menu option?) then (yes)
-
-    if (Fetch/Create Product selected?) then (yes)
-      :Ask for product name;
-
-      if (Product exists?) then (yes)
-        :Fetch product using ProductService;
-        :Display product information;
-      else (no)
-        :Ask user to create product;
-
-        if (User confirms?) then (yes)
-          :Enter product category;
-          :Enter estimated lifespan;
-          :Enter materials;
-          :Create product;
-          :Save product through ProductRepository;
-        else (no)
-          :Return to main menu;
-        endif
-      endif
-
-    elseif (List Products selected?) then (yes)
-      :Display registered products;
-
-    elseif (Impact calculation selected?) then (yes)
-      :Select strategy;
-      :Calculate environmental impact;
-      :Display result;
-    endif
-
-  else (no)
-    :Handle invalid menu option;
-  endif
-
-endwhile (q selected)
-
-:Exit application;
-stop
-@enduml
-```
+It describes the flow of the program when creating a Product. AS it shows, there are separate circumstancial flows that are followed when a material already exists and when it doesn't, allowing a smoother user experience.
