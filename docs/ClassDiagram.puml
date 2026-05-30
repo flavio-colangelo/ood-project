@@ -1,0 +1,186 @@
+@startuml Class Diagram
+
+skinparam shadowing false
+
+	package application {
+		class application.MaterialService {
+			--
+			+{static} createMaterial(material: Material): Material
+			+{static} createMaterial(name: String, impactValue: int, guidance: List<String>): Material
+			+{static} fetchAll(): List<Material>
+			+{static} fetchMaterial(name: String): Material
+			+{static} generateMaterial(): Material
+			+{static} setImpactValue(material: Material, impactValue: int): Material
+			+{static} setName(material: Material, name: String): Material
+			+{static} setRecyclingGuidance(material: Material, guidance: List<String>): Material
+			+{static} update(attribute: String, value: String, material: Material)
+		}
+
+		class application.ProductService {
+			--
+			+{static} createProduct(product: Product): Product
+			+{static} createProduct(name: String, category: String, lifespan: int, materials: List<Material>): Product
+			+{static} enviromentalImpact(product: Product, strategy: EnviromentalImpactCalculator): double
+			+{static} fetchAll(): List<Product>
+			+{static} fetchProduct(name: String): Product
+			+{static} generateProduct(): Product
+			+{static} setCategory(product: Product, category: String): Product
+			+{static} setMaterials(product: Product, materials: List<Material>): Product
+			+{static} setName(product: Product, name: String): Product
+			+{static} setlifespan(product: Product, lifespan: int): Product
+			+{static} update(attribute: String, value: String, product: Product)
+			+{static} updateMaterials(product: Product)
+		}
+
+	}
+
+	package domain {
+		interface domain.EnviromentalImpactCalculator {
+			--
+			+calculate(product: Product): double
+		}
+
+		class domain.Material {
+			-impactValue: int
+			-name: String
+			-recyclingGuidance: List<String>
+			--
+			+Material()
+			+Material(name: String, impactValue: int, recyclingGuidance: List<String>)
+			..
+			+toString(): String
+		}
+
+		class domain.MaterialRepository {
+			--
+			+{static} create(material: Material)
+			+{static} delete()
+			+{static} fetchAll(): List<Material>
+			+{static} parse(rs: ResultSet): Material
+			+{static} read(name: String): Material
+			+{static} update(attribute: String, value: String, material: Material)
+		}
+
+		class domain.Product {
+			-category: String
+			-enstimatedLifespan: int
+			-materials: List<Material>
+			-name: String
+			--
+			+Product()
+			+Product(name: String, category: String, enstimatedLifespan: int, materials: List<Material>)
+			..
+			+toString(): String
+		}
+
+		class domain.ProductRepository {
+			--
+			+{static} create(product: Product)
+			+{static} fetchAll(): List<Product>
+			+{static} parse(rs: ResultSet): Product
+			+{static} read(name: String): Product
+			+{static} update(attribute: String, value: String, product: Product)
+			+{static} updateMaterials(product: Product)
+		}
+
+		class domain.SimpleSumStrategy {
+			--
+			+calculate(product: Product): double
+		}
+
+		class domain.WeightedByLifespanStrategy {
+			--
+			+calculate(product: Product): double
+		}
+
+	}
+
+	package infrastructure {
+		class infrastructure.DatabaseManager {
+			-{static} FOREIGN_STMT: String
+			-{static} URL: String
+			--
+			-{static} createTable(conn: Connection)
+			+{static} delete(tableName: String, filterColumn: String, filterValue: Object)
+			+{static} fetch(tableName: String, pkColumn: String, pkValue: String, mapper: RowMapper<T>): T
+			+{static} fetchList(tableName: String, mapper: RowMapper<T>): List<T>
+			+{static} fetchList(tableName: String, filterColumn: String, filterValue: Object, mapper: RowMapper<T>): List<T>
+			+{static} getTableColumns(tableName: String): List<String>
+			+{static} init()
+			-{static} makeStatement(tableName: String, columns: List<String>): String
+			+{static} push(tableName: String, columnValues: Map<String,Object>)
+			+{static} update(tableName: String, pkColumn: String, pkValue: Object, attribute: String, newValue: Object)
+		}
+	}
+
+	package presentation {
+		class presentation.Menu {
+			-{static} impactValue: List<MenuOption>
+			-{static} options: List<MenuOption>
+			-{static} otherOptions: List<MenuOption>
+			-{static} updateMaterial: List<MenuOption>
+			-{static} updateProduct: List<MenuOption>
+			--
+			-{static} createMaterial(name: String, scanner: Scanner): Material
+			-{static} createMaterialStep1(material: Material, scanner: Scanner): Material
+			-{static} createMaterialStep2(material: Material, scanner: Scanner): Material
+			-{static} createProduct(product: Product, scanner: Scanner): Product
+			-{static} createProductStep1(product: Product, scanner: Scanner): Product
+			-{static} createProductStep2(product: Product, scanner: Scanner): Product
+			-{static} createProductStep3(product: Product, scanner: Scanner): Product
+			#{static} displayOptions(options: List<MenuOption>)
+			-{static} fetchProductOption(scanner: Scanner)
+			-{static} genericOptionsLoop(options: List<MenuOption>, scanner: Scanner)
+			-{static} genericUpdate(attribute: String, promptText: String, target: Object, scanner: Scanner)
+			-{static} genericUpdate(attribute: String, promptText: String, target: Object, scanner: Scanner, requiresNumber: boolean)
+			-{static} init(scanner: Scanner)
+			-{static} init(scanner: Scanner, product: Product)
+			-{static} listMaterialOption()
+			-{static} listProductOption()
+			-{static} materialUpdateRecyclingGuidance(material: Material, scanner: Scanner)
+			-{static} runOption(options: List<MenuOption>, choice: String)
+			+{static} startLoop()
+			-{static} updateMaterial(scanner: Scanner)
+			-{static} updateProduct(scanner: Scanner)
+		}
+
+		class presentation.MenuOption {
+			-character: String
+			-function: Runnable
+			-title: String
+			--
+			+MenuOption(character: String, title: String)
+			+MenuOption(character: String, title: String, function: Runnable)
+			..
+			+run()
+			+toString(): String
+		}
+
+	}
+
+Menu --> ProductService : calls
+Menu --> MaterialService : calls
+Menu --> MenuOption : calls
+
+ProductService --> Product : fetches
+ProductService --> EnviromentalImpactCalculator : calls
+ProductService --> ProductRepository: calls
+
+MaterialService --> Material : fetches
+MaterialService --> MaterialRepository: calls
+
+
+EnviromentalImpactCalculator <|.. SimpleSumStrategy : implements
+EnviromentalImpactCalculator <|.. WeightedByLifespanStrategy : implements
+
+EnviromentalImpactCalculator ..> Product : analyzes
+
+Product "*" o-- "*" Material : contains
+
+MaterialRepository --> DatabaseManager : calls
+MaterialRepository --> Material : calls
+
+ProductRepository --> DatabaseManager : calls
+ProductRepository --> Product : calls
+
+@enduml

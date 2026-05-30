@@ -18,6 +18,22 @@ public class Product {
   public Product() {
   }
 
+  public String getName() {
+    return this.name;
+  }
+
+  public String getCategory() {
+    return this.category;
+  }
+
+  public int getEstimatedLifespan() {
+    return this.enstimatedLifespan;
+  }
+
+  public List<Material> getMaterials() {
+    return this.materials;
+  }
+
   public void setName(String name) {
     this.name = name;
   }
@@ -34,24 +50,15 @@ public class Product {
     this.materials = materials;
   }
 
-  public String getName() {
-    return name;
+  @Override
+  public String toString() {
+    String materialString = "";
+    for (Material material : materials) {
+      for (String line : material.toString().split("\n")) {
+        materialString += "  " + line + "\n";
+      }
+    }
+    return String.format("%s (%s): -%dy\n%s", this.name, this.category, this.enstimatedLifespan, materialString);
   }
 
-  public String getCategory() {
-    return category;
-  }
-
-  public int getEstimatedLifespan() {
-    return enstimatedLifespan;
-  }
-
-  public List<Material> getMaterials() {
-    return materials;
-  }
-
-  public String toString() { // TODO
-    String words = name + category + enstimatedLifespan + materials;
-    return words;
-  }
 }

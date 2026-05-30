@@ -29,19 +29,23 @@ public class Material {
   }
 
   public String getName() {
-    return name;
-  }
-
-  public int getImpact() {
-    return impactValue;
+    return this.name;
   }
 
   public List<String> getGuidance() {
-    return recyclingGuidance;
+    return this.recyclingGuidance;
   }
 
-  public String toString() { // TODO
-    String words = name + Integer.toString(impactValue) + recyclingGuidance;
-    return words;
+  public int getImpact() {
+    return this.impactValue;
+  }
+
+  @Override
+  public String toString() {
+    String guidanceString = "";
+    for (String guidance : recyclingGuidance) {
+      guidanceString += " * " + guidance + "\n";
+    }
+    return String.format("%s: impact - %d\n%s", this.name, this.impactValue, guidanceString);
   }
 }

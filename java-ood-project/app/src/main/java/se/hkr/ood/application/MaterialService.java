@@ -34,12 +34,20 @@ public class MaterialService {
         return material;
     }
 
-    public static Material createMaterial(Material material) {
+    public static Material createMaterial(Material material) throws SQLException {
         MaterialRepository.create(material);
         return material;
     }
 
-    public static Material fetchMaterial(String name) {
+    public static Material fetchMaterial(String name) throws SQLException {
         return MaterialRepository.read(name);
+    }
+
+    public static List<Material> fetchAll() {
+        return MaterialRepository.fetchAll();
+    }
+
+    public static void update(String attribute, String value, Material material) {
+        MaterialRepository.update(attribute, value, material);
     }
 }
