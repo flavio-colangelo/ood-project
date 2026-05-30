@@ -56,9 +56,7 @@ The Infrastructure layer holds the DatabaseManager, which is the only class that
 
 The Strategy Pattern was introduced to allow different ways of calculating environmental impact without changing the Product or ProductService classes.
 
-Currently the project contains two implementations namely SimpleSumStrategy and WeightedByLifespanStrategy
-
-This makes the calculation logic easier to maintain, easier to extend and allows strategies to be switched without changing the rest of the application.
+An alternative would be using a switch or if-else statement that checks for if the strategy that needs to be used is StrategyA or StrategyB, which is a far too rigid approach. One must update that switch/if-else statement as soon as a Strategy is added, introducing the possibility of human error. This pattern mitigates that issue, allowing strategies to be separately defined and functionally swappable.
 
 ## Callback Pattern
 
