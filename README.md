@@ -15,13 +15,26 @@ The goal is to design a menu-driven console program handling product management,
 
 The members of the group are: Adrián Carrillo Jordán, Flavio Colangelo, and Osikoya Omotoyosi Nelson
 
-## Building and Running
+## Running the Project
+0. Install dependency
+
+This project uses SqLite3, and it is a requirement to have it in your PATH. Follow [this tutorial](https://www.tutorialspoint.com/sqlite/sqlite_installation.htm) to set up SQLite.
 1. Clone the repository
+
 ```bash
 git clone https://github.com/flavio-colangelo/ood-project
 cd ood-project
 ```
-2. Runthe java project
+2. Run the java project
+
+```bash
+cd java-ood-project
+gradle run
+```
+Or, for cleaner output,
+```bash
+gradle run --console plain --q
+```
   
 ## Architectural Decisions
 
@@ -72,6 +85,8 @@ This tests follow the Arrange, Act, Assert structure.
 
 # UML Class Diagram
 The UML diagram for the project is available in [ClassDiagram.puml](docs/ClassDiagram.puml).
+
+
 # Flow Diagram
 The Flow diagram for the project is available in [FlowDiagram.puml](docs/FlowDiagram.puml).
 
