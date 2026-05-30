@@ -3,7 +3,6 @@ package se.hkr.ood.application;
 import se.hkr.ood.domain.Material;
 import se.hkr.ood.domain.Product;
 import se.hkr.ood.domain.ProductRepository;
-import se.hkr.ood.domain.RecyclingGuidanceService;
 import se.hkr.ood.domain.EnviromentalImpactCalculator;
 
 import java.sql.SQLException;
@@ -60,12 +59,12 @@ public class ProductService {
         return strategy.calculate(product);
     }
 
-    public static List<List<String>> recyclingGuidance(Product product) {
-        return RecyclingGuidanceService.fetchGuidance(product);
-    }
-
     public static void update(String attribute, String value, Product product) {
         ProductRepository.update(attribute, value, product);
+        if (attribute == "name") {
+            System.out.println(product.getName());
+            System.out.println(product.getMaterials());
+        }
     }
 
     public static void updateMaterials(Product product) {

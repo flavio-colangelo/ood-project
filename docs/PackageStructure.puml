@@ -1,0 +1,89 @@
+@startuml Class Structure
+
+package presentation {
+  class Menu {
+    + startLoop(): void
+  }
+
+  class MenuOption {
+    - character: String
+    - title: String
+    - function: Runnable
+    + run(): void
+    + getCharacter(): String
+    + toString(): String
+  }
+}
+
+package application {
+  class ProductService
+  class MaterialService
+}
+
+package domain {
+
+  class Product {
+    - name: String
+    - category: String
+    - estimatedLifespan: int
+    - materials: List<Material>
+  }
+
+  class Material {
+    - name: String
+    - impactValue: int
+    - recyclingGuidance: List<String>
+  }
+
+  class ProductRepository
+  class MaterialRepository
+  class DatabaseManager
+
+  interface EnviromentalImpactCalculator {
+    + calculate(product: Product): double
+  }
+
+  class SimpleSumStrategy
+  class WeightedByLifespanStrategy
+}
+
+package exceptions {
+  class ApplicationRuntimeException
+  class InvalidMenuOptionException
+  class NoActionSelectedException
+  class ProductNotFoundException
+  class MaterialNotFoundException
+}
+
+class App
+
+App --> Menu
+
+Menu --> MenuOption
+Menu --> ProductService
+Menu --> MaterialService
+
+ProductService --> ProductRepository
+ProductService --> Product
+ProductService --> EnviromentalImpactCalculator
+
+MaterialService --> MaterialRepository
+MaterialService --> Material
+
+ProductRepository --> Product
+MaterialRepository --> Material
+ProductRepository --> DatabaseManager
+MaterialRepository --> DatabaseManager
+
+Product "*" o-- "*" Material
+
+EnviromentalImpactCalculator <|.. SimpleSumStrategy
+EnviromentalImpactCalculator <|.. WeightedByLifespanStrategy
+
+RuntimeException <|-- ApplicationRuntimeException
+RuntimeException <|-- InvalidMenuOptionException
+RuntimeException <|-- NoActionSelectedException
+RuntimeException <|-- ProductNotFoundException
+RuntimeException <|-- MaterialNotFoundException
+
+@enduml

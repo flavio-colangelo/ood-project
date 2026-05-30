@@ -93,135 +93,187 @@ The Environmental Impact Calculator calculates the environmental impact of a pro
 # UML Class Diagram
 ```puml
 @startuml
-class Menu {
-  + startLoop(): void
-  # displayOptions(): void
-  # handleUserInput(): void
+
+package presentation {
+  class Menu {
+    + startLoop(): void
+  }
+
+  class MenuOption {
+    - character: String
+    - title: String
+    - function: Runnable
+    + run(): void
+    + getCharacter(): String
+    + toString(): String
+  }
 }
 
-class ProductService {
-  + createProduct(String ... args): Product
-  + fetchProduct(name: String): Product
-  + listProducts(): List<Product>
-  + recyclingGuidance(p: Product): List<Strings>
-  + enviromentalImpact(p: Product): double
-  + enviromentalImpact(p: Product, Weighted: bool): double
+package application {
+  class ProductService
+  class MaterialService
 }
 
-class MaterialService {
-  + createMaterial(String ... args): void
-  + fetchMaterial(name: String): material
+package domain {
+
+  class Product {
+    - name: String
+    - category: String
+    - estimatedLifespan: int
+    - materials: List<Material>
+  }
+
+  class Material {
+    - name: String
+    - impactValue: int
+    - recyclingGuidance: List<String>
+  }
+
+  class ProductRepository
+  class MaterialRepository
+  class DatabaseManager
+  class RecyclingGuidanceService
+
+  interface EnviromentalImpactCalculator {
+    + calculate(product: Product): double
+  }
+
+  class SimpleSumStrategy
+  class WeightedByLifespanStrategy
 }
 
-interface EnvironmentalImpactCalculator {
-  + calculate(p: Product): double
+package exceptions {
+  class ApplicationRuntimeException
+  class InvalidMenuOptionException
+  class NoActionSelectedException
+  class ProductNotFoundException
+  class MaterialNotFoundException
 }
 
-class WeightedByLifespanStrategy {
-  + calculate(p: Product): double
-}
+class App
 
-class SimpleSumStrategy {
-  + calculate(p: Product): double
-}
+App --> Menu
 
-class Product {
-  - name: String
-  - category: String
-  - estimatedLifespan: Integer
-  - materials: List<Material>
-  + getMaterials(): List<Material>
-}
+Menu --> MenuOption
+Menu --> ProductService
+Menu --> MaterialService
 
-class Material{
-  - name: String
-  - impactValue: Integer
-  - recyclingGuidance: List<String>
-}
+ProductService --> ProductRepository
+ProductService --> RecyclingGuidanceService
+ProductService --> EnviromentalImpactCalculator
 
-class RecyclingGuidanceService {
-  + fetchGuidance(p: Product): List<String>
-}
+MaterialService --> MaterialRepository
 
-interface Repository {
-  + create(object: Object): void
-  + read(name: String): Object
-  + update(attribute: String, value: String): void
-  + delete():void
-  + fetchAll(): List<Object>
-  + parse(r: Response): Object
-}
+ProductRepository --> Product
+MaterialRepository --> Material
+ProductRepository --> DatabaseManager
+MaterialRepository --> DatabaseManager
 
-class ProductRepository {
-  + create(object: Product): void
-  + read(name: String): Product
-  + update(attribute: String, value: String): void
-  + delete(): void
-  + fetchAll(): List<Product>
-  + parse(r: Response): Product
-}
+Product "*" o-- "*" Material
 
-class MaterialRepository {
-  + create(object: Material): void
-  + read(name: String): Material
-  + update(attribute: String, value: String): void
-  + delete(): void
-  + fetchAll(): List<Material>
-  + parse(r: Response): Material
-}
+RecyclingGuidanceService --> Product
 
-class DatabaseManager {
-  
-}
+EnviromentalImpactCalculator <|.. SimpleSumStrategy
+EnviromentalImpactCalculator <|.. WeightedByLifespanStrategy
 
-
-Menu --> ProductService : calls
-Menu --> MaterialService : calls
-
-ProductService --> Product : fetches
-ProductService --> RecyclingGuidanceService : calls
-ProductService --> EnvironmentalImpactCalculator : calls
-ProductService --> ProductRepository: calls
-
-MaterialService --> Material : fetches
-MaterialService --> MaterialRepository: calls
-
-RecyclingGuidanceService --> Product : fetches
-
-EnvironmentalImpactCalculator <|.. SimpleSumStrategy : implements
-EnvironmentalImpactCalculator <|.. WeightedByLifespanStrategy : implements
-
-EnvironmentalImpactCalculator ..> Product : analyzes
-
-Repository <|.. ProductRepository : implements
-Repository <|.. MaterialRepository : implements
-
-Product "*" o-- "*" Material : contains
-
-MaterialRepository --> DatabaseManager : calls
-MaterialRepository --> Material : calls
-
-ProductRepository --> DatabaseManager : calls
-ProductRepository --> Product : calls
+RuntimeException <|-- ApplicationRuntimeException
+RuntimeException <|-- InvalidMenuOptionException
+RuntimeException <|-- NoActionSelectedException
+RuntimeException <|-- ProductNotFoundException
+RuntimeException <|-- MaterialNotFoundException
 @enduml
 ```
 # Package Structure
 ```
-presentation/ 
+presentation/
     Menu.java
-application/ 
-    EnvironmentalImpactCalculator.java
-    SimpleSumStrategy.java << implementation of EIC
-    WeightedByLifespanStrategy.java << implementation of EIC
+    MenuOption.java
+
+application/
     ProductService.java
-    RecyclingGuidanceService.java
+    MaterialService.java
+
 domain/
     Product.java
-    ProductRepository.java  << for database interfacing
     Material.java
-infrastructure/
+    ProductRepository.java
+    MaterialRepository.java
+    RecyclingGuidanceService.java
+    EnviromentalImpactCalculator.java
+    SimpleSumStrategy.java
+    WeightedByLifespanStrategy.java
     DatabaseManager.java
+
+exceptions/
+    ApplicationRuntimeException.java
+    InvalidMenuOptionException.java
+    NoActionSelectedException.java
+    ProductNotFoundException.java
+    MaterialNotFoundException.java
+
+src/test/java/se/hkr/ood/domain/
+    ProductTest.java
+    MaterialTest.java
+    ProductRepositoryTest.java
+    MaterialRepositoryTest.java
+    RecyclingGuidanceServiceTest.java
+    SimpleSumStrategyTest.java
+    WeightedByLifespanTest.java
+  ```
+#   Flow Diagram
+  ```
+  @startuml
+start
+
+:Start application;
+:Open main menu;
+:Display menu options;
+
+while (User has not selected q?) is (continue)
+  :Read user input;
+
+  if (Valid menu option?) then (yes)
+
+    if (Fetch/Create Product selected?) then (yes)
+      :Ask for product name;
+
+      if (Product exists?) then (yes)
+        :Fetch product using ProductService;
+        :Display product information;
+      else (no)
+        :Ask user to create product;
+
+        if (User confirms?) then (yes)
+          :Enter product category;
+          :Enter estimated lifespan;
+          :Enter materials;
+          :Create product;
+          :Save product through ProductRepository;
+        else (no)
+          :Return to main menu;
+        endif
+      endif
+
+    elseif (List Products selected?) then (yes)
+      :Display registered products;
+
+    elseif (Impact calculation selected?) then (yes)
+      :Select strategy;
+      :Calculate environmental impact;
+      :Display result;
+    endif
+
+  else (no)
+    :Handle invalid menu option;
+  endif
+
+endwhile (q selected)
+
+:Exit application;
+stop
+@enduml
 ```
+
 # Git Commands
 `git clone`<br>
 `git clone https://github.com/flavio-colangelo/ood-project`<br>
