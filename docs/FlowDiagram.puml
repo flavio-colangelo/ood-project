@@ -1,0 +1,84 @@
+@startuml Flow Diagram of Fetch Product up to Product Fetched
+Participant Menu
+box "Application" #LightYellow
+Participant ProductService
+Participant MaterialService
+end box
+box "Domain" #Pink
+Participant ProductRepository
+Participant MaterialRepository
+end box
+Activate Menu
+Menu -> ProductService : fetchProduct(String)
+Activate ProductService
+ProductService -> ProductRepository : read(String)
+Activate ProductRepository
+ProductRepository -> DatabaseManager : fetch(String, String, String, RowMapper<Product>)
+Activate DatabaseManager
+alt Product exists
+    DatabaseManager --> ProductRepository : Product
+    DeActivate DatabaseManager
+    ProductRepository -->ProductService : Product
+    DeActivate ProductRepository
+    ProductService --> Menu : Product
+    DeActivate ProductService
+else Product doesn't exist
+    Activate DatabaseManager
+    DatabaseManager --> Menu : ProductNotFoundException
+    DeActivate DatabaseManager
+    Menu -> ProductService : generateProduct()
+    Activate ProductService
+    ProductService --> Menu : Product
+    Menu -> ProductService : setName(Product, String)
+    ProductService --> Menu : Product
+    Menu -> ProductService : setCategory(Product, String)
+    ProductService --> Menu : Product
+    Menu -> ProductService : setLifespan(Product, int)
+    ProductService --> Menu : Product
+    DeActivate ProductService
+    loop for every material name introduced by the user
+        Menu -> MaterialService : fetchMaterial(String)
+        Activate MaterialService
+        MaterialService -> MaterialRepository : read(String)
+        Activate MaterialRepository
+        MaterialRepository -> DatabaseManager : fetch(String, String, String, RowMapper<Material>)
+        Activate DatabaseManager
+        alt Material exists
+            DatabaseManager --> MaterialRepository : Material
+            DeActivate DatabaseManager
+            MaterialRepository --> MaterialService : Material
+            DeActivate MaterialRepository
+            MaterialService --> Menu : Material
+            DeActivate MaterialService
+        else Material doesn't exist
+            Activate DatabaseManager
+            DatabaseManager --> Menu : MaterialNotFoundException
+            DeActivate DatabaseManager
+            Menu -> MaterialService : generateMaterial()
+            Activate MaterialService
+            MaterialService --> Menu : Material
+            Menu -> MaterialService : setName(Material, String)
+            MaterialService --> Menu : Material
+            Menu -> MaterialService : setImpactValue(Material, int)
+            MaterialService --> Menu : Material
+            Menu -> MaterialService : setRecyclingGuidance(Material, List<String>)
+            MaterialService --> Menu : Material
+            Menu -> MaterialService : createMaterial(Material)
+            MaterialService -> MaterialRepository : create(Material)
+            DeActivate MaterialService
+            Activate MaterialRepository
+            MaterialRepository -> DatabaseManager : push(String, Map<String, Object>)
+            DeActivate MaterialRepository
+        end
+    end
+    Menu -> ProductService : setMaterials(Product, List<Material>)
+    Activate ProductService
+    ProductService --> Menu : Product
+    Menu -> ProductService : createProduct(Product)
+    ProductService -> ProductRepository : create(Product)
+    DeActivate ProductService
+    Activate ProductRepository
+    ProductRepository -> DatabaseManager : push(String, Map<String, Object>)
+    DeActivate ProductRepository
+end
+@enduml
