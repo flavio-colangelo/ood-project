@@ -75,7 +75,6 @@ Tests are implemented for:
 - Material
 - ProductRepository
 - MaterialRepository
-- RecyclingGuidanceService
 - SimpleSumStrategy
 - WeightedByLifespanStrategy
 
