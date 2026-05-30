@@ -41,7 +41,7 @@ gradle run --console plain --q
 The project follows a layered architecture consisting of Presentation, Application and Domain layers, with an extra Infrastructure layer. This is to make sure that there is even more separation of concerns, each layer having its own responsibility.
 
 ### Presentation Layer
-In the Presentation layer we have the Menu and MenuOption classes. These classes hold the user interface through which the user interacts with the application. This layer is responsible for user input, menu navigation and displaying information. It also allows for the replacement or upgrade of the layers if needed.
+In the Presentation layer we have the Menu and MenuOption classes. These classes hold the user interface through which the user interacts with the application. This layer is responsible for user input, menu navigation and displaying information. If the UI were to be exchanged with another system, the separation between it and the underlying layers makes it possible.
 
 ### Application Layer
 The Application layer consists of the ProductService and MaterialService classes. These classes coordinate communication between the presentation and domain layers and are responsible for handling application flow.
