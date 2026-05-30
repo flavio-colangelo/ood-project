@@ -1,4 +1,15 @@
+<center>
+
 # ood-project
+![CI](https://github.com/flavio-colangelo/ood-project/actions/workflows/ci.yml/badge.svg)
+![Java Version](https://img.shields.io/badge/Java%20version-25.0.1-red)
+<br>
+![GitHub last main commit](https://img.shields.io/github/last-commit/flavio-colangelo/ood-project?label=Last%20commit%20(main))
+![GitHub last development commit](https://img.shields.io/github/last-commit/flavio-colangelo/ood-project/development?label=Last%20commit%20(development))
+![GitHub repo size](https://img.shields.io/github/repo-size/flavio-colangelo/ood-project?label=Repo%20size)
+<hr>
+
+</center>
 
 The goal is to design a menu-driven console program handling product management, material management, calculation of environmental impact and lastly providing recycling guidance.
 
